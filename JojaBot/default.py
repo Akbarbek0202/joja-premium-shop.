@@ -23,7 +23,7 @@ main_btn_uz = ReplyKeyboardMarkup(
 main_btn_ru = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🍗 Интерактивное меню (Сайт)", web_app=WebAppInfo(url=WEBAPP_URL))],
-        [KeyboardButton(text="📦 Сделать заказ")]
+        [KeyboardButton(text="📦 Сделать заказз")]
     ],
     resize_keyboard=True
 )
