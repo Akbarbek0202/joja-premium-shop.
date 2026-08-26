@@ -21,7 +21,7 @@ from default import (
 from inline import get_chicken_keyboard, get_quantity_keyboard
 from state import OrderState
 from language import LANGUAGES
-from prices import PRODUCT_PRICES, PRODUCT_NAMES, format_price
+from prices import PRODUCT_PRICES, PRODUCT_NAMES
 
 load_dotenv()
 

@@ -55,3 +55,8 @@ PRODUCT_NAMES = {
     "yurak_lotok": {"uz": "Yurak lotok ❤️", "ru": "Сердечки лоток ❤️"},
     "oshqozon_lotok": {"uz": "Oshqozon lotok 📥", "ru": "Желудки лоток 📥"}
 }
+
+
+def format_price(price):
+    """Форматирует число в строку с разделением тысяч пробелом (например, 42 300)"""
+    return f"{price:,}".replace(",", " ")
