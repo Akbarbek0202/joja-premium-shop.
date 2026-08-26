@@ -91,12 +91,13 @@ export const translations = {
       "Kotletlari Pishloqli Slivochnie 🧀": "Котлеты Сливочные с сыром 🧀",
       "Golen lotok 📥": "Голень лоток 📥",
       "File lotok 📥": "Филе лоток 📥",
+      "Bedro lotok 📥": "Бедро лоток 📥",
       "Qanot lotok 📥": "Крылышки лоток 📥",
       "Son lotok 📥": "Бедро лоток 📥",
       "Maloe file lotok 📥": "Малое филе лоток 📥",
       "Jigar lotok 🩸": "Печень лоток 🩸",
-      "Yurak lotok ❤️": "Сердечки лоток ❤️",
-      "Oshqozon lotok 📥": "Желудки лоток 📥"
+      "Yurak lotok ❤️": "Сердце лоток ❤️",
+      "Oshqozon lotok 📥": "Желудок лоток 📥"
     },
     descriptions: {
       "Yumshoq va mazali tovuq go'shti mijozi uchun.": "Нежное и вкусное куриное мясо.",
