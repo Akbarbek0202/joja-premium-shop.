@@ -52,8 +52,8 @@ PRODUCT_NAMES = {
     "bedro_lotok": {"uz": "Son lotok 📥", "ru": "Бедро лоток 📥"},
     "mfile_lotok": {"uz": "Maloe file lotok 📥", "ru": "Малое филе лоток 📥"},
     "jigar_lotok": {"uz": "Jigar lotok 🩸", "ru": "Печень лоток 🩸"},
-    "yurak_lotok": {"uz": "Yurak lotok ❤️", "ru": "Сердечки лоток ❤️"},
-    "oshqozon_lotok": {"uz": "Oshqozon lotok 📥", "ru": "Желудки лоток 📥"}
+    "yurak_lotok": {"uz": "Yurak lotok ❤️", "ru": "Сердце лоток ❤️"},
+    "oshqozon_lotok": {"uz": "Oshqozon lotok 📥", "ru": "Желудок лоток 📥"}
 }
 
 
