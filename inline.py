@@ -10,12 +10,6 @@ def get_categories_keyboard(lang: str) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🍗 Interaktiv menyu (Veb-sayt)" if is_uz else "🍗 Интерактивное меню (Сайт)", 
-                    web_app=WebAppInfo(url=WEBAPP_URL)
-                )
-            ],
-            [
-                InlineKeyboardButton(
                     text="🍗 Tovuq qismlari" if is_uz else "🍗 Части курицы", 
                     callback_data="menu_cat_parts"
                 ),
