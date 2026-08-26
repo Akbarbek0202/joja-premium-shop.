@@ -75,14 +75,11 @@ def get_chicken_keyboard(page: int, lang: str) -> InlineKeyboardMarkup:
                     InlineKeyboardButton(text=PRODUCT_NAMES["kotletlari_semeyniye"][lang], callback_data="cat_kotletlari_semeyniye")
                 ],
                 [
-                    InlineKeyboardButton(text=PRODUCT_NAMES["kotletlari_pishloqli_slivochnie"][lang], callback_data="cat_kotletlari_pishloqli_slivochnie")
-                ],
-                [
                     InlineKeyboardButton(text=PRODUCT_NAMES["golen_lotok"][lang], callback_data="cat_golen_lotok"), 
                     InlineKeyboardButton(text=PRODUCT_NAMES["file_lotok"][lang], callback_data="cat_file_lotok")
                 ],
                 [
-                    InlineKeyboardButton(text=PRODUCT_NAMES["qanot_lotok"][lang], callback_data="cat_qanot_lotok"), 
+                    InlineKeyboardButton(text=PRODUCT_NAMES["kotletlari_pishloqli_slivochnie"][lang], callback_data="cat_kotletlari_pishloqli_slivochnie"),
                     InlineKeyboardButton(text=PRODUCT_NAMES["bedro_lotok"][lang], callback_data="cat_bedro_lotok")
                 ],
                 [
