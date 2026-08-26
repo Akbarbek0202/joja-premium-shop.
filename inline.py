@@ -39,7 +39,7 @@ def get_categories_keyboard(lang: str) -> InlineKeyboardMarkup:
 
 def get_category_products_keyboard(category: str, lang: str) -> InlineKeyboardMarkup:
     back_btn = InlineKeyboardButton(
-        text="⬅️ Menuga qarash" if lang == "uz" else "⬅️ К категориям", 
+        text="⬅️ Menuga qaytish" if lang == "uz" else "⬅️ К категориям", 
         callback_data="to_categories"
     )
     
