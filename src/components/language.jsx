@@ -106,7 +106,7 @@ export const translations = {
       "Sersuv va mazali son qismi, qovurish uchun juda mos.": "Сочное бедро, отлично подходит для жарки.",
       "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.": "Вкусные хрустящие куриные крылышки.",
       "Achchiq marinadlangan qanotlar, tayyor pishirish uchun.": "Острые крылышки, готовые к запеканию.",
-"Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.": "Сочное куриное мясо в ароматном маринаде, готовое к приготовлению.",      "Butun tovuq go'shti, pechda pishirishga tayyorlangan.": "Целая тушка для запекания.",
+      "Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.": "Сочное куриное мясо в ароматном маринаде, готовое к приготовлению.", "Butun tovuq go'shti, pechda pishirishga tayyorlangan.": "Целая тушка для запекания.",
       "O'ta qarsildoq non uvoqlariga belangan klassik naggetslar.": "Классические наггетсы в супер-хрустящей панировке.",
       "Ichida erigan pishloqli qarsildoq issiq naggetslar.": "Горячие хрустящие наггетсы с расплавленным сыром внутри.",
       "An'anaviy usulda tayyorlangan oltinrang yumshoq naggetslar.": "Золотистые нежные наггетсы, приготовленные по традиционному рецепту.",
