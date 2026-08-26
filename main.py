@@ -21,9 +21,11 @@ from default import (
     contact_btn_uz, contact_btn_ru,
     confirm_btn_uz, confirm_btn_ru
 )
-from inline import get_categories_keyboard,
+from inline import (
+    get_categories_keyboard,
     get_category_products_keyboard,
-    get_quantity_keyboard,, get_quantity_keyboard
+    get_quantity_keyboard
+)
 from state import OrderState
 from language import LANGUAGES
 from prices import PRODUCT_PRICES, PRODUCT_NAMES, format_price
@@ -127,8 +129,9 @@ async def process_store_name(message: types.Message, state: FSMContext):
         await state.set_state(OrderState.waiting_for_address)
     else:
         await state.set_state(OrderState.waiting_for_product)
-        keyboard = get_chicken_keyboard(page=1, lang=lang)
-        await message.answer(LANGUAGES[lang]["select_product"], reply_markup=keyboard)
+        keyboard = get_categories_keyboard(lang=lang)
+        text = "Kategoriyani tanlang:" if lang == "uz" else "Выберите категорию:"
+        await message.answer(text, reply_markup=keyboard)
 
 
 @dp.message(OrderState.waiting_for_store_name)
@@ -137,11 +140,15 @@ async def invalid_store_name(message: types.Message, state: FSMContext):
     await message.answer(LANGUAGES[lang]["invalid_store"])
 
 
-@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page1")
-async def go_to_page1(call: types.CallbackQuery, state: FSMContext):
+# Обработка выбора категории товаров
+@dp.callback_query(OrderState.waiting_for_product, F.data.startswith("menu_cat_"))
+async def open_category(call: types.CallbackQuery, state: FSMContext):
     lang = await get_lang(state)
-    text = "Mahsulot toifasini tanlang (1-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 1):"
-    keyboard = get_chicken_keyboard(page=1, lang=lang)
+    cat_name = call.data.replace("menu_cat_", "")
+    
+    text = "Mahsulotni tanlang:" if lang == "uz" else "Выберите товар:"
+    keyboard = get_category_products_keyboard(category=cat_name, lang=lang)
+    
     try:
         await call.message.edit_text(text, reply_markup=keyboard)
     except (TelegramBadRequest, TelegramNotFound):
@@ -149,23 +156,13 @@ async def go_to_page1(call: types.CallbackQuery, state: FSMContext):
     await call.answer()
 
 
-@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page2")
-async def go_to_page2(call: types.CallbackQuery, state: FSMContext):
+# Возврат к списку категорий
+@dp.callback_query(OrderState.waiting_for_product, F.data == "to_categories")
+async def back_to_categories(call: types.CallbackQuery, state: FSMContext):
     lang = await get_lang(state)
-    text = "Mahsulot toifasini tanlang (2-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 2):"
-    keyboard = get_chicken_keyboard(page=2, lang=lang)
-    try:
-        await call.message.edit_text(text, reply_markup=keyboard)
-    except (TelegramBadRequest, TelegramNotFound):
-        await call.message.answer(text, reply_markup=keyboard)
-    await call.answer()
-
-
-@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page3")
-async def go_to_page3(call: types.CallbackQuery, state: FSMContext):
-    lang = await get_lang(state)
-    text = "Mahsulot toifasini tanlang (3-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 3):"
-    keyboard = get_chicken_keyboard(page=3, lang=lang)
+    text = "Kategoriyani tanlang:" if lang == "uz" else "Выберите категорию:"
+    keyboard = get_categories_keyboard(lang=lang)
+    
     try:
         await call.message.edit_text(text, reply_markup=keyboard)
     except (TelegramBadRequest, TelegramNotFound):
@@ -278,8 +275,8 @@ async def back_to_products(call: types.CallbackQuery, state: FSMContext):
     lang = await get_lang(state)
     await state.set_state(OrderState.waiting_for_product)
     
-    keyboard = get_chicken_keyboard(page=1, lang=lang)
-    text = LANGUAGES[lang]["select_product"]
+    keyboard = get_categories_keyboard(lang=lang)
+    text = "Kategoriyani tanlang:" if lang == "uz" else "Выберите категорию:"
     try:
         await call.message.edit_text(text, reply_markup=keyboard)
     except (TelegramBadRequest, TelegramNotFound):
@@ -292,8 +289,9 @@ async def add_more(message: types.Message, state: FSMContext):
     lang = await get_lang(state)
     await state.set_state(OrderState.waiting_for_product)
     
-    keyboard = get_chicken_keyboard(page=1, lang=lang)
-    await message.answer(LANGUAGES[lang]["add_more"], reply_markup=keyboard)
+    keyboard = get_categories_keyboard(lang=lang)
+    text = "Kategoriyani tanlang:" if lang == "uz" else "Выберите категорию:"
+    await message.answer(text, reply_markup=keyboard)
 
 
 @dp.message(OrderState.waiting_for_cart, F.text.in_({"✅ Buyurtmani yakunlash", "✅ Завершить заказ"}))
