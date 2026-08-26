@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { Plus, Minus, ShoppingBag } from 'lucide-react'
-import { translations } from './components/language';
+import { translations } from './components/language'
 
 const tg = window.Telegram?.WebApp;
 
@@ -57,13 +57,13 @@ const App = () => {
   const getProductName = (name) => {
     if (!name) return '';
     const cleanName = name.trim();
-    return t.products[cleanName] || t.products[name] || name;
+    return t.products?.[cleanName] || t.products?.[name] || name;
   };
 
   const getProductDesc = (desc) => {
     if (!desc) return '';
     const cleanDesc = desc.trim();
-    return t.descriptions[cleanDesc] || t.descriptions[desc] || desc;
+    return t.descriptions?.[cleanDesc] || t.descriptions?.[desc] || desc;
   };
 
   const handleSendOrder = () => {
@@ -93,7 +93,6 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#0b0c10] text-[#1e2022] pb-32 font-sans">
-
       <nav className="sticky top-0 z-50 bg-[#0b0c10]/90 backdrop-blur-md border-b border-zinc-900 px-6 py-5">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex flex-col">
@@ -103,21 +102,32 @@ const App = () => {
           </div>
 
           <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800 text-[11px] font-bold">
-            <button onClick={() => setLang('uz')} className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'uz' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>UZ</button>
-            <button onClick={() => setLang('ru')} className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'ru' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>RU</button>
+            <button 
+              onClick={() => setLang('uz')} 
+              className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'uz' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              UZ
+            </button>
+            <button 
+              onClick={() => setLang('ru')} 
+              className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'ru' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              RU
+            </button>
           </div>
 
           <div className="relative p-3 bg-zinc-900 text-zinc-400 rounded-xl border border-zinc-800">
             <ShoppingBag className="w-5 h-5 text-rose-500" />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-lg">{totalItems}</span>
+              <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-lg">
+                {totalItems}
+              </span>
             )}
           </div>
         </div>
       </nav>
 
       <main className="max-w-6xl mx-auto px-4 mt-8">
-
         <div className="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none md:justify-center">
           {[
             { id: 'all', label: t.all },
@@ -129,9 +139,15 @@ const App = () => {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-200 border ${activeCategory === cat.id
-                ? 'bg-rose-700 text-white border-rose-600 shadow-md'
-                : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'}`}>{cat.label}</button>))}
+              className={`px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-200 border ${
+                activeCategory === cat.id
+                  ? 'bg-rose-700 text-white border-rose-600 shadow-md'
+                  : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -155,7 +171,9 @@ const App = () => {
                           height: '100%',
                           objectFit: 'cover',
                           objectPosition: 'center'
-                        }} className="scale-105 transition-transform duration-300" />
+                        }} 
+                        className="scale-105 transition-transform duration-300" 
+                      />
                     ) : (
                       <span className="text-xs text-stone-400">{t.noImage}</span>
                     )}
@@ -170,17 +188,33 @@ const App = () => {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-stone-200/80 flex items-center justify-between">
-                  <span className="text-xs font-bold tracking-tight text-zinc-900 whitespace-nowrap">{Number(item.price).toLocaleString('ru-RU')} {t.currency}</span>
+                  <span className="text-xs font-bold tracking-tight text-zinc-900 whitespace-nowrap">
+                    {Number(item.price).toLocaleString('ru-RU')} {t.currency}
+                  </span>
 
                   {cart[item.id] ? (
                     <div className="flex items-center gap-2 bg-stone-200/60 rounded-lg p-1 border border-stone-300/30">
-                      <button onClick={() => toggleCart(item.id, 'minus')} className="p-1 bg-stone-100 hover:bg-white text-zinc-800 rounded shadow-sm" >
-                        <Minus className="w-3 h-3" /></button>
+                      <button 
+                        onClick={() => toggleCart(item.id, 'minus')} 
+                        className="p-1 bg-stone-100 hover:bg-white text-zinc-800 rounded shadow-sm" 
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
                       <span className="text-xs font-bold w-4 text-center text-zinc-900">{cart[item.id]}</span>
-                      <button onClick={() => toggleCart(item.id, 'plus')} className="p-1 bg-zinc-900 hover:bg-zinc-800 text-white rounded shadow-sm"><Plus className="w-3 h-3" /></button>
+                      <button 
+                        onClick={() => toggleCart(item.id, 'plus')} 
+                        className="p-1 bg-zinc-900 hover:bg-zinc-800 text-white rounded shadow-sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
                     </div>
                   ) : (
-                    <button onClick={() => toggleCart(item.id, 'plus')} className="p-2 bg-zinc-900 hover:bg-rose-700 text-white rounded-xl transition-all duration-200 active:scale-95"><Plus className="w-4 h-4" /></button>
+                    <button 
+                      onClick={() => toggleCart(item.id, 'plus')} 
+                      className="p-2 bg-zinc-900 hover:bg-rose-700 text-white rounded-xl transition-all duration-200 active:scale-95"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
                   )}
                 </div>
               </div>
@@ -206,7 +240,6 @@ const App = () => {
           </button>
         </div>
       )}
-
     </div>
   )
 }

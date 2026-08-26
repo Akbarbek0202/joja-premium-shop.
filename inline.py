@@ -1,14 +1,10 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from prices import PRODUCT_NAMES
-
-
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from prices import PRODUCT_NAMES
 
 WEBAPP_URL = "https://joja-premium-shop-qkbb.vercel.app"
 
-
 def get_webapp_inline_keyboard(lang: str) -> InlineKeyboardMarkup:
-    btn_text = " 🍗 Interaktiv menyu (Veb-sayt)" if lang == "uz" else "🍗 Интерактивное меню (Сайт)"
+    btn_text = "🍗 Interaktiv menyu (Veb-sayt)" if lang == "uz" else "🍗 Интерактивное меню (Сайт)"
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -18,7 +14,6 @@ def get_webapp_inline_keyboard(lang: str) -> InlineKeyboardMarkup:
     )
 
 def get_chicken_keyboard(page: int, lang: str) -> InlineKeyboardMarkup:
-    
     prev_text = "⬅️ Ortga" if lang == "uz" else "⬅️ Назад"
     next_text = "Keyingisi ➡️" if lang == "uz" else "Далее ➡️"
 
@@ -34,7 +29,8 @@ def get_chicken_keyboard(page: int, lang: str) -> InlineKeyboardMarkup:
                     InlineKeyboardButton(text=PRODUCT_NAMES["bedro"][lang], callback_data="cat_bedro")
                 ],
                 [
-                    InlineKeyboardButton(text=PRODUCT_NAMES["qanot"][lang], callback_data="cat_qanot")
+                    InlineKeyboardButton(text=PRODUCT_NAMES["qanot_loktevaya"][lang], callback_data="cat_qanot_loktevaya"),
+                    InlineKeyboardButton(text=PRODUCT_NAMES["qanot_plechevaya"][lang], callback_data="cat_qanot_plechevaya")
                 ],
                 [
                     InlineKeyboardButton(text=next_text, callback_data="to_page2")
@@ -75,6 +71,13 @@ def get_chicken_keyboard(page: int, lang: str) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
             inline_keyboard=[
                 [
+                    InlineKeyboardButton(text=PRODUCT_NAMES["kotletalar_burger"][lang], callback_data="cat_kotletalar_burger"),
+                    InlineKeyboardButton(text=PRODUCT_NAMES["kotletlari_semeyniye"][lang], callback_data="cat_kotletlari_semeyniye")
+                ],
+                [
+                    InlineKeyboardButton(text=PRODUCT_NAMES["kotletlari_pishloqli_slivochnie"][lang], callback_data="cat_kotletlari_pishloqli_slivochnie")
+                ],
+                [
                     InlineKeyboardButton(text=PRODUCT_NAMES["golen_lotok"][lang], callback_data="cat_golen_lotok"), 
                     InlineKeyboardButton(text=PRODUCT_NAMES["file_lotok"][lang], callback_data="cat_file_lotok")
                 ],
@@ -95,15 +98,12 @@ def get_chicken_keyboard(page: int, lang: str) -> InlineKeyboardMarkup:
                 ]
             ]
         )
-    
-
-
 
 def get_quantity_keyboard(quantity: int, lang: str = "uz") -> InlineKeyboardMarkup:
     btn_confirm_text = "📥 Savatga qo'shish" if lang == "uz" else "📥 Добавить в корзину"
     btn_back_text = "⬅️ Orqaga" if lang == "uz" else "⬅️ Назад"
     
-    keyboard = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="➖", callback_data="qty_minus"),
@@ -118,4 +118,3 @@ def get_quantity_keyboard(quantity: int, lang: str = "uz") -> InlineKeyboardMark
             ]
         ]
     )
-    return keyboard
