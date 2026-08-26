@@ -1,7 +1,10 @@
+import sys
 import os
 import json
+
 import asyncio
 import logging
+
 from dotenv import load_dotenv
 
 from aiogram import Bot, Dispatcher, F, types
@@ -18,10 +21,10 @@ from default import (
     contact_btn_uz, contact_btn_ru,
     confirm_btn_uz, confirm_btn_ru
 )
-from inline import get_chicken_keyboard, get_quantity_keyboard
+from inline import get_chicken_keyboard, get_webapp_inline_keyboard, get_quantity_keyboard
 from state import OrderState
 from language import LANGUAGES
-from prices import PRODUCT_PRICES, PRODUCT_NAMES
+from prices import PRODUCT_PRICES, PRODUCT_NAMES, format_price
 
 load_dotenv()
 
@@ -52,6 +55,7 @@ def format_cart_summary(cart: dict, lang: str) -> tuple[str, float]:
         else:
             qty = item
             str_key = str(prod_key)
+            
             prod_translations = PRODUCT_NAMES.get(str_key, {})
             prod_name = prod_translations.get(lang, str_key.replace("_", " ").capitalize())
             price = PRODUCT_PRICES.get(str_key, 0)
@@ -89,7 +93,7 @@ async def process_language(message: types.Message, state: FSMContext):
         reply_markup=reply_markup
     )
     await state.set_state(None)
-
+        
 
 @dp.message(F.text == "/help")
 async def help_handler(message: types.Message, state: FSMContext):
@@ -131,14 +135,35 @@ async def invalid_store_name(message: types.Message, state: FSMContext):
     await message.answer(LANGUAGES[lang]["invalid_store"])
 
 
-@dp.callback_query(OrderState.waiting_for_product, F.data.in_({"to_page1", "to_page2", "to_page3"}))
-async def change_page(call: types.CallbackQuery, state: FSMContext):
+@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page1")
+async def go_to_page1(call: types.CallbackQuery, state: FSMContext):
     lang = await get_lang(state)
-    page_num = int(call.data.replace("to_page", ""))
-    
-    text = f"Mahsulot toifasini tanlang ({page_num}-sahifa):" if lang == "uz" else f"Выберите категорию товара (стр. {page_num}):"
-    keyboard = get_chicken_keyboard(page=page_num, lang=lang)
-    
+    text = "Mahsulot toifasini tanlang (1-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 1):"
+    keyboard = get_chicken_keyboard(page=1, lang=lang)
+    try:
+        await call.message.edit_text(text, reply_markup=keyboard)
+    except (TelegramBadRequest, TelegramNotFound):
+        await call.message.answer(text, reply_markup=keyboard)
+    await call.answer()
+
+
+@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page2")
+async def go_to_page2(call: types.CallbackQuery, state: FSMContext):
+    lang = await get_lang(state)
+    text = "Mahsulot toifasini tanlang (2-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 2):"
+    keyboard = get_chicken_keyboard(page=2, lang=lang)
+    try:
+        await call.message.edit_text(text, reply_markup=keyboard)
+    except (TelegramBadRequest, TelegramNotFound):
+        await call.message.answer(text, reply_markup=keyboard)
+    await call.answer()
+
+
+@dp.callback_query(OrderState.waiting_for_product, F.data == "to_page3")
+async def go_to_page3(call: types.CallbackQuery, state: FSMContext):
+    lang = await get_lang(state)
+    text = "Mahsulot toifasini tanlang (3-sahifa):" if lang == "uz" else "Выберите категорию товара (стр. 3):"
+    keyboard = get_chicken_keyboard(page=3, lang=lang)
     try:
         await call.message.edit_text(text, reply_markup=keyboard)
     except (TelegramBadRequest, TelegramNotFound):
@@ -408,7 +433,6 @@ async def web_app_data_handler(message: types.Message, state: FSMContext):
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
