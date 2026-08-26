@@ -21,7 +21,9 @@ from default import (
     contact_btn_uz, contact_btn_ru,
     confirm_btn_uz, confirm_btn_ru
 )
-from inline import get_chicken_keyboard, get_webapp_inline_keyboard, get_quantity_keyboard
+from inline import get_categories_keyboard,
+    get_category_products_keyboard,
+    get_quantity_keyboard,, get_quantity_keyboard
 from state import OrderState
 from language import LANGUAGES
 from prices import PRODUCT_PRICES, PRODUCT_NAMES, format_price
