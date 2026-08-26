@@ -18,7 +18,7 @@ export const translations = {
       "Qanot tirsak qismi 🪶": "Qanot tirsak qismi 🪶",
       "Qanot yelka qismi 🪶": "Qanot yelka qismi 🪶",
       "Achchiq qanot 🌶️": "Achchiq qanot 🌶️",
-      "Baffalo 🌶️": "Баффало 🌶️",
+      "Baffalo 🌶️": "Baffalo 🌶️",
       "Broyler 🐓": "Broyler 🐓",
       "Okorochka 10kg 📦": "Okorochka 10kg 📦",
       "Golen 10kg 📦": "Golen 10kg 📦",
