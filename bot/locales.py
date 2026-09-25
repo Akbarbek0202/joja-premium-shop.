@@ -1,0 +1,117 @@
+# --- Названия категорий ---
+
+CATEGORY_NAMES = {
+    "parts": {"uz": "🍗 Tovuq qismlari", "ru": "🍗 Части курицы"},
+    "marinade": {"uz": "🌶️ Marinadlar", "ru": "🌶️ Маринованное"},
+    "naggets": {"uz": "🍟 Naggetslar va Kotletlar", "ru": "🍟 Наггетсы и Котлеты"},
+    "lotok": {"uz": "📥 Lotoklar", "ru": "📥 Лотки"},
+    "sub": {"uz": "🫀 Subproduktlar", "ru": "🫀 Субпродукты"},
+}
+
+# --- Все тексты бота ---
+
+LANGUAGES = {
+    "uz": {
+        "welcome": "Assalomu alaykum! Jo'ja botiga xush kelibsiz! 🐓\n\n✨ <b>Interaktiv menyumizni sinab ko'ring!</b>\nSayt orqali qulay va tez buyurtma berishingiz mumkin.\n\nYoki pastdagi tugmalar orqali oddiy rejimda buyurtma bering 👇",
+        "help": "❓ <b>Yordam bo'limi</b>\n\n• Buyurtma berish uchun pastdagi <b>'📦 Buyurtma berish'</b> yoki <b>'🛍 Interaktiv menyu'</b> tugmasini bosing.\n• Botni qayta ishga tushirish uchun /start yuboring.",
+        "ask_store": "Yaxshi! 😊\n\nEndi do'koningiz nomini yozing:\n<i>(Masalan: Oila market)</i>",
+        "invalid_store": "⚠️ <b>Iltimos, do'kon nomini faqat matn ko'rinishida yuboring!</b>",
+        "ask_qty": "<b>{product}</b> uchun qancha miqdor buyurtma qilasiz (dona)?",
+        "invalid_qty": "⚠️ <b>Iltimos, miqdorni to'g'ri yuboring!</b>",
+        "cart_title": "🛒 <b>Sizning savatingiz:</b>\n\n",
+        "cart_footer": "\nYana mahsulot qo'shasizmi yoki buyurtmani yakunlaysizmi?",
+        "add_more": "Iltimos, keyingi mahsulotni tanlang:",
+        "ask_location": "📍 Iltimos, do'koningiz geolokatsiyasini yuboring:",
+        "invalid_location": "⚠️ <b>Iltimos, pastdagi tugma orqali geolokatsiyangizni yuboring!</b>",
+        "ask_contact": "📱 Iltimos, pastdagi tugmani bosib telefon raqamingizni yuboring:",
+        "invalid_contact": "⚠️ <b>Iltimos, pastdagi tugma orqali kontaktingizni yuboring!</b>",
+        "checkout": "📋 <b>Buyurtmangizni tekshiring:</b>\n\n👤 Buyurtmachi: <b>{name}</b>\n🏪 Do'kon: <b>{store}</b>\n📦 Mahsulotlar:\n{products}\n📱 Telefon: {phone}\n📍 Geolokatsiya qabul qilindi!\n\nMa'lumotlar to'g'rimi?",
+        "success": "Sizning buyurtmangiz muvaffaqiyatli qabul qilindi! ✅ Yaqin orada siz bilan bog'lanamiz.",
+        "canceled": "Buyurtma bekor qilindi. ❌",
+
+        # Каталог
+        "select_category": "Kategoriyani tanlang:",
+        "select_product": "Mahsulotni tanlang:",
+        "product_card": "🍗 <b>{name}</b>\n\n💰 Narxi: {price} so'm\n\n📝 {description}\n\nKattaligini/sonini tanlang:",
+        "quantity_btn": "{qty} dona",
+        "total_btn": "Jami",
+        "empty_category": "Bu kategoriyada hozircha mahsulot yo'q.",
+
+        # Админка
+        "admin_only": "⛔️ Bu bo'lim faqat admin uchun!",
+        "admin_welcome": "🛠 <b>Admin panel</b>\n\nBu yerda siz mahsulotlarni boshqarishingiz mumkin.",
+        "admin_add": "➕ Yangi mahsulot qo'shish",
+        "admin_list": "📋 Mahsulotlar ro'yxati",
+        "admin_delete": "🗑 Mahsulotni o'chirish",
+        "admin_stats": "📊 Statistika",
+        "admin_back": "⬅️ Admin menyuga qaytish",
+        "admin_stat_text": "📊 <b>Statistika:</b>\n\n📦 Jami mahsulotlar: <b>{total}</b>\n🔧 Bot tomonidan: <b>{builtin}</b>\n✏️ Siz qo'shgan: <b>{custom}</b>",
+        "admin_ask_name": "📝 <b>Mahsulot nomini kiriting</b> (uz):\n\n<i>Masalan: Boldir 🍗</i>",
+        "admin_ask_price": "💰 <b>Narxini kiriting (so'mda)</b>:\n\n<i>Masalan: 42300</i>",
+        "admin_invalid_price": "⚠️ <b>Narx faqat raqam bo'lishi kerak!</b>\nQaytadan kiriting:",
+        "admin_ask_desc": "📝 <b>Tavsifni kiriting</b> (uz):\n\n<i>Masalan: Yumshoq va mazali tovuq go'shti.</i>",
+        "admin_ask_image": "🖼 <b>Mahsulot rasmini yuboring</b>:\n\n• Rasmni yuklang YOKI linkni (URL) yozing.\n• Rasm bo'lmasa — <b>Skip</b> tugmasini bosing.",
+        "admin_ask_category": "📂 <b>Kategoriyani tanlang:</b>",
+        "admin_added": "✅ <b>Mahsulot qo'shildi!</b>\n\n🛒 {name}\n💰 {price} so'm\n📂 {category}",
+        "admin_delete_choose": "🗑 <b>Qaysi mahsulotni o'chirasiz?</b>\n\n<i>Mahsulotni tanlang:</i>",
+        "admin_deleted": "✅ Mahsulot o'chirildi: <b>{name}</b>",
+        "admin_nothing_to_delete": "ℹ️ O'chirish uchun mahsulot yo'q.",
+        "admin_canceled": "❌ Bekor qilindi.",
+        "admin_select_product": "Mahsulotni tanlang:",
+
+        # Заказ папе
+        "notify_new_order": "🔔 <b>Yangi buyurtma keldi!</b>",
+    },
+
+    "ru": {
+        "welcome": "Здравствуйте! Добро пожаловать в официальный бот Jo'ja! 🐓\n\n✨ <b>Попробуйте наше интерактивное меню!</b>\nВы можете удобно и быстро сделать заказ через сайт.\n\nИли используйте стандартные кнопки ниже 👇",
+        "help": "❓ <b>Раздел помощи</b>\n\n• Для оформления заказа нажмите кнопку <b>'📦 Сделать заказ'</b> или <b>'🛍 Интерактивное меню'</b>.\n• Для перезапуска бота отправьте /start.",
+        "ask_store": "Отлично! 😊\n\nТеперь введите название вашего магазина:\n<i>(Например: Оила маркет)</i>",
+        "invalid_store": "⚠️ <b>Пожалуйста, отправьте название магазина только в текстовом формате!</b>",
+        "ask_qty": "Какое количество (в шт.) вы хотите заказать для <b>{product}</b>?",
+        "invalid_qty": "⚠️ <b>Пожалуйста, отправьте количество корректно!</b>",
+        "cart_title": "🛒 <b>Ваша корзина:</b>\n\n",
+        "cart_footer": "\nХотите добавить ещё товар или завершить заказ?",
+        "add_more": "Пожалуйста, выберите следующий товар:",
+        "ask_location": "📍 Пожалуйста, отправьте геолокацию вашего магазина:",
+        "invalid_location": "⚠️ <b>Пожалуйста, отправьте геолокацию с помощью кнопки ниже!</b>",
+        "ask_contact": "📱 Пожалуйста, отправьте ваш номер телефона с помощью кнопки ниже:",
+        "invalid_contact": "⚠️ <b>Пожалуйста, отправьте ваш контакт с помощью кнопки ниже!</b>",
+        "checkout": "📋 <b>Проверьте ваш заказ:</b>\n\n👤 Заказчик: <b>{name}</b>\n🏪 Магазин: <b>{store}</b>\n📦 Товары:\n{products}\n📱 Телефон: {phone}\n📍 Геолокация получена!\n\nВсе данные верны?",
+        "success": "Ваш заказ успешно принят! ✅ Скоро мы с вами свяжемся.",
+        "canceled": "Заказ отменен. ❌",
+
+        # Каталог
+        "select_category": "Выберите категорию:",
+        "select_product": "Выберите товар:",
+        "product_card": "🍗 <b>{name}</b>\n\n💰 Цена: {price} сум\n\n📝 {description}\n\nВыберите количество:",
+        "quantity_btn": "{qty} шт",
+        "total_btn": "Итого",
+        "empty_category": "В этой категории пока нет товаров.",
+
+        # Админка
+        "admin_only": "⛔️ Этот раздел только для админа!",
+        "admin_welcome": "🛠 <b>Админ панель</b>\n\nЗдесь вы можете управлять товарами.",
+        "admin_add": "➕ Добавить товар",
+        "admin_list": "📋 Список товаров",
+        "admin_delete": "🗑 Удалить товар",
+        "admin_stats": "📊 Статистика",
+        "admin_back": "⬅️ Назад в админ меню",
+        "admin_stat_text": "📊 <b>Статистика:</b>\n\n📦 Всего товаров: <b>{total}</b>\n🔧 От бота: <b>{builtin}</b>\n✏️ Добавленных: <b>{custom}</b>",
+        "admin_ask_name": "📝 <b>Введите название товара</b>:\n\n<i>Например: Голень 🍗</i>",
+        "admin_ask_price": "💰 <b>Введите цену (в сумах)</b>:\n\n<i>Например: 42300</i>",
+        "admin_invalid_price": "⚠️ <b>Цена должна быть числом!</b>\nПопробуйте ещё раз:",
+        "admin_ask_desc": "📝 <b>Введите описание товара</b>:\n\n<i>Например: Нежное и вкусное куриное мясо.</i>",
+        "admin_ask_image": "🖼 <b>Отправьте фото товара</b>:\n\n• Прикрепите фото ИЛИ отправьте ссылку (URL) текстом.\n• Если фото нет — нажмите <b>Skip</b>.",
+        "admin_ask_category": "📂 <b>Выберите категорию:</b>",
+        "admin_added": "✅ <b>Товар добавлен!</b>\n\n🛒 {name}\n💰 {price} сум\n📂 {category}",
+        "admin_delete_choose": "🗑 <b>Какой товар удалить?</b>\n\n<i>Выберите товар из списка:</i>",
+        "admin_deleted": "✅ Товар удалён: <b>{name}</b>",
+        "admin_nothing_to_delete": "ℹ️ Нет товаров для удаления.",
+        "admin_canceled": "❌ Отменено.",
+        "admin_select_product": "Выберите товар:",
+
+        # Заказ папе
+        "notify_new_order": "🔔 <b>Новый заказ!</b>",
+    },
+}
