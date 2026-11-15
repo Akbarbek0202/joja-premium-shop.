@@ -6,7 +6,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bot.handlers import order
-from bot.keyboards.reply import LANGUAGE_BUTTONS, lang_btn, get_main_keyboard
+from bot.keyboards.reply import lang_btn, get_main_keyboard
 from bot.locales import LANGUAGES
 from bot.states import OrderState
 from bot.utils import get_lang
@@ -20,20 +20,14 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         await state.clear()
         await state.set_state(OrderState.waiting_for_language)
         await message.answer(
-            "Tilni tanlang / Тилни танланг / Выберите язык:",
+            "Assalomu alaykum! Iltimos, tilni tanlang:\n\n"
+            "Здравствуйте! Пожалуйста, выберите язык:",
             reply_markup=lang_btn,
         )
 
-    @dp.message(
-        OrderState.waiting_for_language,
-        F.text.in_(set(LANGUAGE_BUTTONS.values())),
-    )
+    @dp.message(OrderState.waiting_for_language, F.text.in_({"O'zbekcha 🇺🇿", "Русский 🇷🇺"}))
     async def process_language(message: types.Message, state: FSMContext):
-        lang = next(
-            language
-            for language, label in LANGUAGE_BUTTONS.items()
-            if label == message.text
-        )
+        lang = "uz" if "O'zbekcha" in message.text else "ru"
         await state.update_data(lang=lang)
         await message.answer(LANGUAGES[lang]["welcome"], reply_markup=get_main_keyboard(lang))
         await state.set_state(None)
@@ -52,8 +46,6 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             return
 
         lang = data.get("lang", "uz")
-        if not isinstance(lang, str) or lang not in LANGUAGES:
-            lang = "uz"
         items = data.get("items", [])
 
         cart = {}

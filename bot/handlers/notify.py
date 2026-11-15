@@ -3,7 +3,6 @@ import logging
 from aiogram import Bot
 
 from bot.config import PAPA_ID
-from bot.i18n import localized_uzbek_text
 from bot.services.catalog import format_price
 from bot.utils import format_cart_summary
 
@@ -19,35 +18,20 @@ async def send_order_notification(bot: Bot, data: dict, lang: str) -> bool:
     lon = data.get("lon")
 
     products_list, total_sum = format_cart_summary(cart, lang)
-    total_label = (
-        "Итоговая сумма"
-        if lang == "ru"
-        else localized_uzbek_text("Jami summa", lang)
-    )
-    currency = "сум" if lang == "ru" else localized_uzbek_text("so'm", lang)
+    total_label = "Jami summa" if lang == "uz" else "Итоговая сумма"
+    currency = "so'm" if lang == "uz" else "сум"
     products_list += f"\n💰 <b>{total_label}: {format_price(total_sum)} {currency}</b>"
 
     order_text = (
-        "🔔 <b>Новый заказ!</b>\n\n"
-        if lang == "ru"
-        else f"🔔 <b>{localized_uzbek_text('Yangi buyurtma keldi!', lang)}</b>\n\n"
-    )
-    store_label = localized_uzbek_text("Do'kon:", lang)
-    order_text += (
-        f"🏪 <b>Магазин:</b> {store_name}\n\n"
-        if lang == "ru"
-        else f"🏪 <b>{store_label}</b> {store_name}\n\n"
+        "🔔 <b>Yangi buyurtma keldi!</b>\n\n"
+        if lang == "uz"
+        else "🔔 <b>Новый заказ!</b>\n\n"
     )
     order_text += (
-        f"📦 <b>Состав заказа:</b>\n{products_list}\n"
-        if lang == "ru"
-        else f"📦 <b>{localized_uzbek_text('Buyurtma tarkibi:', lang)}</b>\n{products_list}\n"
+        f"🏪 <b>Do'kon:</b> {store_name}\n\n" if lang == "uz" else f"🏪 <b>Магазин:</b> {store_name}\n\n"
     )
-    order_text += (
-        f"📱 <b>Телефон:</b> {phone}"
-        if lang == "ru"
-        else f"📱 <b>{localized_uzbek_text('Telefon:', lang)}</b> {phone}"
-    )
+    order_text += f"📦 <b>Buyurtma tarkibi:</b>\n{products_list}\n" if lang == "uz" else f"📦 <b>Состав заказа:</b>\n{products_list}\n"
+    order_text += f"📱 <b>Telefon:</b> {phone}" if lang == "uz" else f"📱 <b>Телефон:</b> {phone}"
 
     try:
         await bot.send_message(chat_id=PAPA_ID, text=order_text)
