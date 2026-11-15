@@ -22,3 +22,7 @@ class AdminState(StatesGroup):
     waiting_for_image = State()
     waiting_for_category = State()
     waiting_for_delete = State()
+    waiting_for_edit_product = State()
+    waiting_for_edit_fields = State()
+    waiting_for_edit_value = State()
+    waiting_for_edit_category = State()

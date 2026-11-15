@@ -11,14 +11,19 @@ from bot.keyboards.admin import (
     get_admin_menu,
     get_admin_categories_keyboard,
     get_admin_products_keyboard,
+    get_admin_edit_fields_keyboard,
+    get_admin_edit_categories_keyboard,
+    get_admin_edit_image_keyboard,
     get_admin_skip_image_keyboard,
     get_admin_cancel_keyboard,
 )
 from bot.locales import CATEGORY_NAMES, LANGUAGES
 from bot.services.catalog import (
     get_all_products,
+    get_product,
     add_product,
     delete_product,
+    update_product,
     format_price,
 )
 from bot.states import AdminState
@@ -231,6 +236,208 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             text = text[:4000] + "…"
         await state.set_state(AdminState.menu)
         await _edit_or_answer(call, text, get_admin_menu())
+        await call.answer()
+
+    # --- Редактирование товара ---
+
+    @dp.callback_query(F.data == "admin_edit")
+    async def admin_edit_start(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        products = get_all_products()
+        lang = await get_lang(state)
+        if not products:
+            await state.set_state(AdminState.menu)
+            await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
+        else:
+            await state.set_state(AdminState.waiting_for_edit_product)
+            await _edit_or_answer(
+                call,
+                LANGUAGES[lang]["admin_edit_choose"],
+                get_admin_products_keyboard(products, lang, action="edit"),
+            )
+        await call.answer()
+
+    @dp.callback_query(AdminState.waiting_for_edit_product, F.data.startswith("adm_edit_"))
+    async def admin_edit_select_product(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        product_id = call.data[len("adm_edit_"):]
+        product = get_product(product_id)
+        lang = await get_lang(state)
+        if not product:
+            await _edit_or_answer(
+                call,
+                LANGUAGES[lang]["admin_edit_not_found"],
+                get_admin_menu(),
+            )
+            await state.set_state(AdminState.menu)
+            await call.answer()
+            return
+
+        await state.update_data(edit_product_id=product_id)
+        await state.set_state(AdminState.waiting_for_edit_fields)
+        name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+        await _edit_or_answer(
+            call,
+            LANGUAGES[lang]["admin_edit_fields"].format(name=_escape_html(name)),
+            get_admin_edit_fields_keyboard(),
+        )
+        await call.answer()
+
+    @dp.callback_query(AdminState.waiting_for_edit_fields, F.data.startswith("adm_edit_field_"))
+    async def admin_edit_choose_field(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        field = call.data[len("adm_edit_field_"):]
+        data = await state.get_data()
+        product = get_product(data.get("edit_product_id", ""))
+        lang = await get_lang(state)
+        if not product or field not in {
+            "name", "name_ru", "price", "description", "description_ru", "image", "category"
+        }:
+            await call.answer(LANGUAGES[lang]["admin_edit_not_found"], show_alert=True)
+            return
+
+        if field == "category":
+            await state.set_state(AdminState.waiting_for_edit_category)
+            await _edit_or_answer(
+                call,
+                LANGUAGES[lang]["admin_edit_ask_category"],
+                get_admin_edit_categories_keyboard(),
+            )
+        else:
+            await state.update_data(edit_field=field)
+            await state.set_state(AdminState.waiting_for_edit_value)
+            prompts = {
+                "name": "admin_edit_ask_name",
+                "name_ru": "admin_edit_ask_name_ru",
+                "price": "admin_edit_ask_price",
+                "description": "admin_edit_ask_description",
+                "description_ru": "admin_edit_ask_description_ru",
+                "image": "admin_edit_ask_image",
+            }
+            markup = get_admin_edit_image_keyboard() if field == "image" else get_admin_cancel_keyboard()
+            await _edit_or_answer(call, LANGUAGES[lang][prompts[field]], markup)
+        await call.answer()
+
+    async def save_edited_value(message: types.Message, state: FSMContext, field: str, value):
+        data = await state.get_data()
+        lang = await get_lang(state)
+        product = update_product(data.get("edit_product_id", ""), {field: value})
+        if not product:
+            await state.set_state(AdminState.menu)
+            await message.answer(LANGUAGES[lang]["admin_edit_not_found"], reply_markup=get_admin_menu())
+            return
+        await state.set_state(AdminState.waiting_for_edit_fields)
+        name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+        await message.answer(
+            f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
+            f"{LANGUAGES[lang]['admin_edit_fields'].format(name=_escape_html(name))}",
+            reply_markup=get_admin_edit_fields_keyboard(),
+        )
+
+    @dp.message(AdminState.waiting_for_edit_value, F.text)
+    async def admin_edit_text_value(message: types.Message, state: FSMContext):
+        data = await state.get_data()
+        field = data.get("edit_field")
+        value = message.text.strip()
+        lang = await get_lang(state)
+        if field == "price":
+            raw = value.replace(" ", "").replace("so'm", "").replace("сум", "").replace("sum", "")
+            try:
+                value = int(float(raw))
+            except ValueError:
+                await message.answer(LANGUAGES[lang]["admin_invalid_price"])
+                return
+        elif field in {"description", "description_ru"}:
+            value = " ".join(value.split())
+        elif field == "image" and not value.lower().startswith(("http://", "https://")):
+            await message.answer(LANGUAGES[lang]["admin_edit_invalid_image"])
+            return
+        elif field not in {"name", "name_ru", "description", "description_ru", "image"}:
+            await message.answer(LANGUAGES[lang]["admin_edit_not_found"])
+            return
+        await save_edited_value(message, state, field, value)
+
+    @dp.message(AdminState.waiting_for_edit_value, F.photo)
+    async def admin_edit_photo(message: types.Message, state: FSMContext):
+        data = await state.get_data()
+        if data.get("edit_field") != "image":
+            await message.answer(LANGUAGES[await get_lang(state)]["admin_edit_ask_image"])
+            return
+        photo = message.photo[-1]
+        file_info = await bot.get_file(photo.file_id)
+        url = f"https://api.telegram.org/file/bot{bot.token}/{file_info.file_path}"
+        await save_edited_value(message, state, "image", url)
+
+    @dp.callback_query(AdminState.waiting_for_edit_category, F.data.startswith("adm_edit_cat_"))
+    async def admin_edit_category(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        category = call.data[len("adm_edit_cat_"):]
+        data = await state.get_data()
+        product = update_product(data.get("edit_product_id", ""), {"category": category})
+        lang = await get_lang(state)
+        if not product:
+            await state.set_state(AdminState.menu)
+            await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
+        else:
+            await state.set_state(AdminState.waiting_for_edit_fields)
+            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            await _edit_or_answer(
+                call,
+                f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
+                f"{LANGUAGES[lang]['admin_edit_fields'].format(name=_escape_html(name))}",
+                get_admin_edit_fields_keyboard(),
+            )
+        await call.answer()
+
+    @dp.callback_query(F.data == "admin_edit_fields")
+    async def admin_edit_fields_back(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        data = await state.get_data()
+        product = get_product(data.get("edit_product_id", ""))
+        lang = await get_lang(state)
+        if not product:
+            await state.set_state(AdminState.menu)
+            await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
+        else:
+            await state.set_state(AdminState.waiting_for_edit_fields)
+            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            await _edit_or_answer(
+                call,
+                LANGUAGES[lang]["admin_edit_fields"].format(name=_escape_html(name)),
+                get_admin_edit_fields_keyboard(),
+            )
+        await call.answer()
+
+    @dp.callback_query(F.data == "adm_edit_remove_image")
+    async def admin_edit_remove_image(call: types.CallbackQuery, state: FSMContext):
+        if not _is_admin(call):
+            await call.answer("⛔️", show_alert=True)
+            return
+        data = await state.get_data()
+        product = update_product(data.get("edit_product_id", ""), {"image": ""})
+        lang = await get_lang(state)
+        if not product:
+            await state.set_state(AdminState.menu)
+            await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
+        else:
+            await state.set_state(AdminState.waiting_for_edit_fields)
+            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            await _edit_or_answer(
+                call,
+                f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
+                f"{LANGUAGES[lang]['admin_edit_fields'].format(name=_escape_html(name))}",
+                get_admin_edit_fields_keyboard(),
+            )
         await call.answer()
 
     # --- Удаление товара ---

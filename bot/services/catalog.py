@@ -4,12 +4,13 @@
 Все товары хранятся в двух местах:
 1. BASE_PRODUCTS (bot/catalog_data.py) — товары, зашитые в код.
 2. bot/data/custom_products.json — товары, добавленные папой через админку.
+3. bot/data/product_overrides.json — изменения базовых товаров.
 """
 import json
 import logging
 import os
 
-from bot.config import CUSTOM_PRODUCTS_FILE, ensure_data_dir
+from bot.config import CUSTOM_PRODUCTS_FILE, PRODUCT_OVERRIDES_FILE, ensure_data_dir
 from bot.catalog_data import BASE_PRODUCTS
 
 logger = logging.getLogger(__name__)
@@ -37,9 +38,33 @@ def _save_custom_products(products: list) -> None:
         json.dump(products, f, ensure_ascii=False, indent=2)
 
 
+def _load_product_overrides() -> dict:
+    """Загружает изменения базовых товаров."""
+    if not os.path.exists(PRODUCT_OVERRIDES_FILE):
+        return {}
+    try:
+        with open(PRODUCT_OVERRIDES_FILE, "r", encoding="utf-8") as f:
+            overrides = json.load(f)
+        return overrides if isinstance(overrides, dict) else {}
+    except (json.JSONDecodeError, OSError) as e:
+        logger.error(f"Не удалось прочитать {PRODUCT_OVERRIDES_FILE}: {e}")
+        return {}
+
+
+def _save_product_overrides(overrides: dict) -> None:
+    ensure_data_dir()
+    with open(PRODUCT_OVERRIDES_FILE, "w", encoding="utf-8") as f:
+        json.dump(overrides, f, ensure_ascii=False, indent=2)
+
+
 def get_all_products() -> list:
     """Все товары: базовые + добавленные папой."""
-    return BASE_PRODUCTS + _load_custom_products()
+    overrides = _load_product_overrides()
+    base_products = [
+        {**product, **overrides.get(str(product["id"]), {})}
+        for product in BASE_PRODUCTS
+    ]
+    return base_products + _load_custom_products()
 
 
 def get_products_by_category(category: str) -> list:
@@ -92,6 +117,45 @@ def delete_product(product_id: str) -> dict | None:
             logger.info(f"Удалён товар: {removed}")
             return removed
     return None
+
+
+def update_product(product_id: str, changes: dict) -> dict | None:
+    """Обновляет товар и возвращает его; базовые товары сохраняются как переопределения."""
+    allowed_fields = {
+        "name",
+        "name_ru",
+        "price",
+        "description",
+        "description_ru",
+        "image",
+        "category",
+    }
+    if not changes or not set(changes).issubset(allowed_fields):
+        raise ValueError("Недопустимые поля товара")
+    if "category" in changes and changes["category"] not in CATEGORIES:
+        raise ValueError("Недопустимая категория")
+
+    products = _load_custom_products()
+    for product in products:
+        if str(product["id"]) == str(product_id):
+            product.update(changes)
+            _save_custom_products(products)
+            logger.info(f"Изменён товар: {product}")
+            return product
+
+    base_product = next(
+        (product for product in BASE_PRODUCTS if str(product["id"]) == str(product_id)),
+        None,
+    )
+    if base_product is None:
+        return None
+
+    overrides = _load_product_overrides()
+    overrides.setdefault(str(product_id), {}).update(changes)
+    _save_product_overrides(overrides)
+    updated = {**base_product, **overrides[str(product_id)]}
+    logger.info(f"Изменён базовый товар: {updated}")
+    return updated
 
 
 def format_price(price) -> str:

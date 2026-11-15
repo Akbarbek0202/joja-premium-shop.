@@ -14,6 +14,7 @@ WEBAPP_URL = "https://joja-premium-shop-qkbb.vercel.app"
 # --- Файлы данных ---
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "bot", "data")
 CUSTOM_PRODUCTS_FILE = os.path.join(DATA_DIR, "custom_products.json")
+PRODUCT_OVERRIDES_FILE = os.path.join(DATA_DIR, "product_overrides.json")
 
 
 def ensure_data_dir() -> None:
