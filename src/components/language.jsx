@@ -1,5 +1,4 @@
-export const translations = {
-  uz: {
+const uz = {
     title: "JO'JA",
     subTitle: "Sifatli va Mazzali",
     all: "Barchasi",
@@ -59,8 +58,9 @@ export const translations = {
       "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.": "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.",
       "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.": "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari."
     }
-  },
-  ru: {
+};
+
+const ru = {
     title: "JO'JA",
     subTitle: "Качественно и Вкусно",
     all: "Все",
@@ -120,5 +120,47 @@ export const translations = {
       "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.": "Куриные крылышки, упакованные в специальный гигиенический лоток.",
       "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.": "Куриное бедро, упакованное в специальный гигиенический лоток."
     }
+};
+
+const cyrillicMap = {
+  sh: 'ш', ch: 'ч', ng: 'нг', yo: 'ё', ya: 'я', yu: 'ю', ye: 'е',
+  a: 'а', b: 'б', d: 'д', e: 'е', f: 'ф', g: 'г', h: 'ҳ', i: 'и',
+  j: 'ж', k: 'к', l: 'л', m: 'м', n: 'н', o: 'о', p: 'п', q: 'қ',
+  r: 'р', s: 'с', t: 'т', u: 'у', v: 'в', x: 'х', y: 'й', z: 'з',
+  w: 'в', c: 'с'
+}
+
+export const toUzbekCyrillic = (text) => text
+  .split(/(<[^>]+>|\{[^{}]+\})/g)
+  .map((part) => {
+    if (
+      (part.startsWith('<') && part.endsWith('>'))
+      || (part.startsWith('{') && part.endsWith('}'))
+    ) return part
+    return part
+      .replace(/o[ʻ’']/gi, (match) => match[0] === match[0].toUpperCase() ? 'Ў' : 'ў')
+      .replace(/g[ʻ’']/gi, (match) => match[0] === match[0].toUpperCase() ? 'Ғ' : 'ғ')
+      .replace(/[ʻ’']/g, '')
+      .replace(/sh|ch|ng|yo|ya|yu|ye|[a-z]/gi, (match) => {
+        const result = cyrillicMap[match.toLowerCase()]
+        if (match === match.toUpperCase()) return result.toUpperCase()
+        if (match[0] === match[0].toUpperCase()) return result[0].toUpperCase() + result.slice(1)
+        return result
+      })
+  })
+  .join('')
+
+const transliterateTree = (value) => {
+  if (typeof value === 'string') return toUzbekCyrillic(value)
+  if (Array.isArray(value)) return value.map(transliterateTree)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, transliterateTree(item)]))
   }
-};  
+  return value
+}
+
+export const translations = {
+  uz,
+  uz_cyrl: transliterateTree(uz),
+  ru
+}

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { Plus, Minus, ShoppingBag } from 'lucide-react'
-import { translations } from './components/language'
+import { toUzbekCyrillic, translations } from './components/language'
 
 const tg = window.Telegram?.WebApp;
 
@@ -57,13 +57,17 @@ const App = () => {
   const getProductName = (name) => {
     if (!name) return '';
     const cleanName = name.trim();
-    return t.products?.[cleanName] || t.products?.[name] || name;
+    return t.products?.[cleanName]
+      || t.products?.[name]
+      || (lang === 'uz_cyrl' ? toUzbekCyrillic(cleanName) : name);
   };
 
   const getProductDesc = (desc) => {
     if (!desc) return '';
     const cleanDesc = desc.trim();
-    return t.descriptions?.[cleanDesc] || t.descriptions?.[desc] || desc;
+    return t.descriptions?.[cleanDesc]
+      || t.descriptions?.[desc]
+      || (lang === 'uz_cyrl' ? toUzbekCyrillic(cleanDesc) : desc);
   };
 
   const handleSendOrder = () => {
@@ -101,19 +105,23 @@ const App = () => {
             </h1>
           </div>
 
-          <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800 text-[11px] font-bold">
-            <button 
-              onClick={() => setLang('uz')} 
-              className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'uz' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-            >
-              UZ
-            </button>
-            <button 
-              onClick={() => setLang('ru')} 
-              className={`px-2.5 py-1 rounded-md transition-all duration-200 ${lang === 'ru' ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-            >
-              RU
-            </button>
+          <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800 text-[10px] font-bold">
+            {[
+              { code: 'uz', label: 'UZ-L', title: "O'zbekcha, lotin" },
+              { code: 'uz_cyrl', label: 'УЗ-К', title: 'Ўзбекча, кирилл' },
+              { code: 'ru', label: 'RU', title: 'Русский' }
+            ].map(language => (
+              <button
+                key={language.code}
+                title={language.title}
+                aria-label={language.title}
+                aria-pressed={lang === language.code}
+                onClick={() => setLang(language.code)}
+                className={`px-1.5 py-1 rounded-md transition-all duration-200 ${lang === language.code ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+              >
+                {language.label}
+              </button>
+            ))}
           </div>
 
           <div className="relative p-3 bg-zinc-900 text-zinc-400 rounded-xl border border-zinc-800">
