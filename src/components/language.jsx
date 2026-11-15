@@ -1,166 +1,67 @@
-const uz = {
-    title: "JO'JA",
-    subTitle: "Sifatli va Mazzali",
-    all: "Barchasi",
-    parts: "Qismlar 🍗",
-    lotok: "Lotoklar 📥",
-    naggets: "Naggetslar 🍟",
-    marinade: "Marinat 🌶️",
-    noImage: "Rasm yo'q",
-    buyurtma: "Buyurtma berish",
-    currency: "so'm",
-    products: {
-      "Boldir 🍗": "Boldir 🍗",
-      "File 🥩": "File 🥩",
-      "Maloe file 🥩": "Maloe file 🥩",
-      "Son 🍖": "Son 🍖",
-      "Qanot tirsak qismi 🪶": "Qanot tirsak qismi 🪶",
-      "Qanot yelka qismi 🪶": "Qanot yelka qismi 🪶",
-      "Achchiq qanot 🌶️": "Achchiq qanot 🌶️",
-      "Baffalo 🌶️": "Baffalo 🌶️",
-      "Broyler 🐓": "Broyler 🐓",
-      "Okorochka 10kg 📦": "Okorochka 10kg 📦",
-      "Golen 10kg 📦": "Golen 10kg 📦",
-      "Naggetslar Qarsillovchi ✨": "Naggetslar Qarsillovchi ✨",
-      "Naggetslar Pishloqli 🧀": "Naggetslar Pishloqli 🧀",
-      "Naggetslar Klassik 🍗": "Naggetslar Klassik 🍗",
-      "Naggetslar Stripsi 🥢": "Naggetslar Stripsi 🥢",
-      "Naggetslar Kids 👶": "Naggetslar Kids 👶",
-      "Burger uchun kotletalar 🍔": "Burger uchun kotletalar 🍔",
-      "Semeyniye kotletlari 🧆": "Semeyniye kotletlari 🧆",
-      "Pishloqli va qaymoqli kotletlar 🧀": "Pishloqli va qaymoqli kotletlar 🧀",
-      "Golen lotok 📥": "Boldir lotok 📥",
-      "File lotok 📥": "File lotok 📥",
-      "Son lotok 📥": "Son lotok 📥",
-      "Maloe file lotok 📥": "Maloe file lotok 📥",
-      "Jigar lotok 🩸": "Jigar lotok 🩸",
-      "Yurak lotok ❤️": "Yurak lotok ❤️",
-      "Oshqozon lotok 📥": "Oshqozon lotok 📥"
-    },
-    descriptions: {
-      "Yumshoq va mazali tovuq go'shti mijozi uchun.": "Yumshoq va mazzali tovuq go'shti mijozi uchun.",
-      "Tovuqning eng yumshoq va yog'siz ko'krak qismi.": "Tovuqning eng yumshoq va yog'siz ko'krak qismi.",
-      "Sersuv va mazali son qismi, qovurish uchun juda mos.": "Sersuv va mazzali son qismi, qovurish uchun juda mos.",
-      "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.": "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.",
-      "Achchiq marinadlangan qanotlar, tayyor pishirish uchun.": "Achchiq marinadlangan qanotlar, tayyor pishirish uchun.",
-      "Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.": "Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.",
-      "Butun tovuq go'shti, pechda pishirishga tayyorlangan.": "Butun tovuq go'shti, pechda pishirishga tayyorlangan.",
-      "O'ta qarsildoq non uvoqlariga belangan klassik naggetslar.": "O'ta qarsildoq non uvoqlariga belangan klassik naggetslar.",
-      "Ichida erigan pishloqli qarsildoq issiq naggetslar.": "Ichida erigan pishloqli qarsildoq issiq naggetslar.",
-      "An'anaviy usulda tayyorlangan oltinrang yumshoq naggetslar.": "An'anaviy usulda tayyorlangan oltinrang yumshoq naggetslar.",
-      "Uzunchoq shakldagi qarsildoq tovuq stripslari.": "Uzunchoq shakldagi qarsildoq tovuq stripslari.",
-      "Bolajonlar uchun maxsus tayyorlangan mazali va foydali naggetslar.": "Bolajonlar uchun maxsus tayyorlangan mazzali va foydali naggetslar.",
-      "O'ta qarsildoq burger uchun tovuq kotletalari.": "O'ta qarsildoq burger uchun tovuq kotletalari.",
-      "Mazali va sersuv oilaviy tovuq kotletalari.": "Mazali va sersuv oilaviy tovuq kotletalari.",
-      "Ichida erigan pishloq va qaymoqli mazali kotletlar.": "Ichida erigan pishloq va qaymoqli mazali kotletlar.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq boldirlari.": "Maxsus gigiyenik lotokda qadoqlangan tovuq boldirlari.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.": "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.": "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.": "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari."
-    }
-};
-
-const ru = {
-    title: "JO'JA",
-    subTitle: "Качественно и Вкусно",
-    all: "Все",
-    parts: "Части 🍗",
-    lotok: "Лотки 📥",
-    naggets: "Наггетсы 🍟",
-    marinade: "Маринад 🌶️",
-    noImage: "Нет фото",
-    buyurtma: "Заказать",
-    currency: "сум",
-    products: {
-      "Boldir 🍗": "Голень 🍗",
-      "File 🥩": "Филе 🥩",
-      "Maloe file 🥩": "Малое филе 🥩",
-      "Son 🍖": "Бедро 🍖",
-      "Qanot tirsak qismi 🪶": "Локтевая часть крыла 🪶",
-      "Qanot yelka qismi 🪶": "Плечевая часть крыла 🪶",
-      "Achchiq qanot 🌶️": "Крыло в остром маринаде 🌶️",
-      "Baffalo 🌶️": "Баффало 🌶️",
-      "Broyler 🐓": "Бройлер 🐓",
-      "Okorochka 10kg 📦": "Окорочка 10кг 📦",
-      "Golen 10kg 📦": "Голень 10кг 📦",
-      "Naggetslar Qarsillovchi ✨": "Наггетсы Хрустящие ✨",
-      "Naggetslar Pishloqli 🧀": "Наггетсы Сырные 🧀",
-      "Naggetslar Klassik 🍗": "Наггетсы Классические 🍗",
-      "Naggetslar Stripsi 🥢": "Стрипсы 🥢",
-      "Naggetslar Kids 👶": "Наггетсы Кидс 👶",
-      "Burger uchun kotletlar 🍔": "Котлеты для бургера 🍔",
-      "Kotletlari Semeyniye 🧆": "Котлеты Семейные 🧆",
-      "Kotletlari Pishloqli Slivochnie 🧀": "Котлеты Сливочные с сыром 🧀",
-      "Golen lotok 📥": "Голень лоток 📥",
-      "File lotok 📥": "Филе лоток 📥",
-      "Bedro lotok 📥": "Бедро лоток 📥",
-      "Son lotok 📥": "Бедро лоток 📥",
-      "Maloe file lotok 📥": "Малое филе лоток 📥",
-      "Jigar lotok 🩸": "Печень лоток 🩸",
-      "Yurak lotok ❤️": "Сердце лоток ❤️",
-      "Oshqozon lotok 📥": "Желудок лоток 📥"
-    },
-    descriptions: {
-      "Yumshoq va mazali tovuq go'shti mijozi uchun.": "Нежное и вкусное куриное мясо.",
-      "Tovuqning eng yumshoq va yog'siz ko'krak qismi.": "Мягкая и нежирная куриная грудка.",
-      "Sersuv va mazali son qismi, qovurish uchun juda mos.": "Сочное бедро, отлично подходит для жарки.",
-      "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.": "Вкусные хрустящие куриные крылышки.",
-      "Achchiq marinadlangan qanotlar, tayyor pishirish uchun.": "Острые крылышки, готовые к запеканию.",
-      "Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.": "Сочное куриное мясо в ароматном маринаде, готовое к приготовлению.", "Butun tovuq go'shti, pechda pishirishga tayyorlangan.": "Целая тушка для запекания.",
-      "O'ta qarsildoq non uvoqlariga belangan klassik naggetslar.": "Классические наггетсы в супер-хрустящей панировке.",
-      "Ichida erigan pishloqli qarsildoq issiq naggetslar.": "Горячие хрустящие наггетсы с расплавленным сыром внутри.",
-      "An'anaviy usulda tayyorlangan oltinrang yumshoq naggetslar.": "Золотистые нежные наггетсы, приготовленные по традиционному рецепту.",
-      "Uzunchoq shakldagi qarsildoq tovuq stripslari.": "Хрустящие куриные стрипсы продолговатой формы.",
-      "Bolajonlar uchun maxsus tayyorlangan mazali va foydali naggetslar.": "Вкусные и полезные наггетсы, приготовленные специально для детей.",
-      "O'ta qarsildoq burger uchun tovuq kotletalari.": "Сочные котлеты в хрустящей панировке для бургера.",
-      "Mazali va sersuv oilaviy tovuq kotletalari.": "Вкусные и сочные семейные куриные котлеты.",
-      "Ichida erigan pishloq va qaymoqli mazali kotletlar.": "Нежные котлеты с начинкой из расплавленного сыра.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq boldirlari.": "Куриная голень, упакованная в специальный гигиенический лоток.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.": "Куриное филе, упакованное в специальный гигиенический лоток.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.": "Куриные крылышки, упакованные в специальный гигиенический лоток.",
-      "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.": "Куриное бедро, упакованное в специальный гигиенический лоток."
-    }
-};
-
-const cyrillicMap = {
-  sh: 'ш', ch: 'ч', ng: 'нг', yo: 'ё', ya: 'я', yu: 'ю', ye: 'е',
-  a: 'а', b: 'б', d: 'д', e: 'е', f: 'ф', g: 'г', h: 'ҳ', i: 'и',
-  j: 'ж', k: 'к', l: 'л', m: 'м', n: 'н', o: 'о', p: 'п', q: 'қ',
-  r: 'р', s: 'с', t: 'т', u: 'у', v: 'в', x: 'х', y: 'й', z: 'з',
-  w: 'в', c: 'с'
-}
-
-export const toUzbekCyrillic = (text) => text
-  .split(/(<[^>]+>|\{[^{}]+\})/g)
-  .map((part) => {
-    if (
-      (part.startsWith('<') && part.endsWith('>'))
-      || (part.startsWith('{') && part.endsWith('}'))
-    ) return part
-    return part
-      .replace(/o[ʻ’']/gi, (match) => match[0] === match[0].toUpperCase() ? 'Ў' : 'ў')
-      .replace(/g[ʻ’']/gi, (match) => match[0] === match[0].toUpperCase() ? 'Ғ' : 'ғ')
-      .replace(/[ʻ’']/g, '')
-      .replace(/sh|ch|ng|yo|ya|yu|ye|[a-z]/gi, (match) => {
-        const result = cyrillicMap[match.toLowerCase()]
-        if (match === match.toUpperCase()) return result.toUpperCase()
-        if (match[0] === match[0].toUpperCase()) return result[0].toUpperCase() + result.slice(1)
-        return result
-      })
-  })
-  .join('')
-
-const transliterateTree = (value) => {
-  if (typeof value === 'string') return toUzbekCyrillic(value)
-  if (Array.isArray(value)) return value.map(transliterateTree)
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, transliterateTree(item)]))
+const russian = {
+  title: "JO'JA",
+  subTitle: "Качественно и вкусно",
+  all: "Все",
+  parts: "Части 🍗",
+  lotok: "Лотки 📥",
+  naggets: "Наггетсы 🍟",
+  marinade: "Маринад 🌶️",
+  noImage: "Нет фото",
+  order: "Заказать",
+  currency: "сум",
+  products: {
+    "Boldir 🍗": "Голень 🍗",
+    "File 🥩": "Филе 🥩",
+    "Maloe file 🥩": "Малое филе 🥩",
+    "Son 🍖": "Бедро 🍖",
+    "Qanot tirsak qismi 🪶": "Локтевая часть крыла 🪶",
+    "Qanot yelka qismi 🪶": "Плечевая часть крыла 🪶",
+    "Achchiq qanot 🌶️": "Крыло в остром маринаде 🌶️",
+    "Baffalo 🌶️": "Баффало 🌶️",
+    "Broyler 🐓": "Бройлер 🐓",
+    "Okorochka 10kg 📦": "Окорочка 10 кг 📦",
+    "Golen 10kg 📦": "Голень 10 кг 📦",
+    "Naggetslar Qarsillovchi ✨": "Наггетсы хрустящие ✨",
+    "Naggetslar Pishloqli 🧀": "Наггетсы с сыром 🧀",
+    "Naggetslar Klassik 🍗": "Наггетсы классические 🍗",
+    "Naggetslar Stripsi 🥢": "Куриные стрипсы 🥢",
+    "Naggetslar Kids 👶": "Детские наггетсы 👶",
+    "Burger uchun kotletlar 🍔": "Котлеты для бургера 🍔",
+    "Kotletlari Semeyniye 🧆": "Семейные котлеты 🧆",
+    "Kotletlari Pishloqli Slivochnie 🧀": "Сливочные котлеты с сыром 🧀",
+    "Golen lotok 📥": "Голень в лотке 📥",
+    "File lotok 📥": "Филе в лотке 📥",
+    "Bedro lotok 📥": "Бедро в лотке 📥",
+    "Son lotok 📥": "Бедро в лотке 📥",
+    "Maloe file lotok 📥": "Малое филе в лотке 📥",
+    "Jigar lotok 🩸": "Куриная печень 🩸",
+    "Yurak lotok ❤️": "Куриные сердечки ❤️",
+    "Oshqozon lotok 📥": "Куриные желудки 📥"
+  },
+  descriptions: {
+    "Yumshoq va mazali tovuq go'shti mijozi uchun.": "Нежное и вкусное куриное мясо.",
+    "Tovuqning eng yumshoq va yog'siz ko'krak qismi.": "Мягкая и нежирная куриная грудка.",
+    "Sersuv va mazali son qismi, qovurish uchun juda mos.": "Сочное бедро, отлично подходит для жарки.",
+    "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.": "Любимые многими хрустящие куриные крылышки.",
+    "Achchiq marinadlangan qanotlar, tayyor pishirish uchun.": "Острые крылышки в маринаде, готовые к приготовлению.",
+    "Sinyor tovuq go'shti va mazali marinad, pishirishga tayyor.": "Сочное куриное мясо в ароматном маринаде, готовое к приготовлению.",
+    "Butun tovuq go'shti, pechda pishirishga tayyorlangan.": "Целая курица, подготовленная для запекания.",
+    "O'ta qarsildoq non uvoqlariga belangan klassik naggetslar.": "Классические наггетсы в хрустящей панировке.",
+    "Ichida erigan pishloqli qarsildoq issiq naggetslar.": "Горячие хрустящие наггетсы с расплавленным сыром внутри.",
+    "An'anaviy usulda tayyorlangan oltinrang yumshoq naggetslar.": "Золотистые нежные наггетсы, приготовленные по традиционному рецепту.",
+    "Uzunchoq shakldagi qarsildoq tovuq stripslari.": "Хрустящие куриные стрипсы продолговатой формы.",
+    "Bolajonlar uchun maxsus tayyorlangan mazali va foydali naggetslar.": "Вкусные и полезные наггетсы, приготовленные специально для детей.",
+    "O'ta qarsildoq burger uchun tovuq kotletalari.": "Сочные котлеты в хрустящей панировке для бургера.",
+    "Mazali va sersuv oilaviy tovuq kotletalari.": "Вкусные и сочные семейные куриные котлеты.",
+    "Ichida erigan pishloq va qaymoqli mazali kotletlar.": "Нежные котлеты с начинкой из расплавленного сыра.",
+    "Maxsus gigiyenik lotokda qadoqlangan tovuq boldirlari.": "Куриная голень в специальном гигиеничном лотке.",
+    "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.": "Куриное филе в специальном гигиеничном лотке.",
+    "Maxsus gigiyenik lotokda qadoqlangan tovuq qanotlari.": "Куриные крылышки в специальном гигиеничном лотке.",
+    "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.": "Куриное бедро в специальном гигиеничном лотке.",
+    "Tovuq jigari lotokda.": "Куриная печень в лотке.",
+    "Tovuq yuragi lotokda.": "Куриные сердечки в лотке.",
+    "Tovuq oshqozoni lotokda.": "Куриные желудки в лотке."
   }
-  return value
 }
 
-export const translations = {
-  uz,
-  uz_cyrl: transliterateTree(uz),
-  ru
-}
+export const translations = { ru: russian }

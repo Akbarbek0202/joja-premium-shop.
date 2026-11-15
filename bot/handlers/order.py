@@ -21,23 +21,15 @@ from bot.services.catalog import get_product, format_price
 from bot.services.photo_cache import send_product_photo
 from bot.states import OrderState
 from bot.utils import get_lang, format_cart_summary
+from bot.i18n import localized_product_field
 
 logger = logging.getLogger(__name__)
 
 
 def _card_text(product: dict, lang: str) -> str:
     """Текст карточки товара."""
-    if lang == "uz":
-        name = product["name"]
-        description = product.get("description", "")
-        return (
-            f"🍗 <b>{name}</b>\n\n"
-            f"💰 Narxi: {format_price(product['price'])} so'm\n\n"
-            f"📝 {description}\n\n"
-            f"Kattaligini/sonini tanlang:"
-        )
-    name = product.get("name_ru", product["name"])
-    description = product.get("description_ru", product.get("description", ""))
+    name = localized_product_field(product, "name") or "Товар"
+    description = localized_product_field(product, "description") or "Описание отсутствует"
     return (
         f"🍗 <b>{name}</b>\n\n"
         f"💰 Цена: {format_price(product['price'])} сум\n\n"
@@ -49,7 +41,7 @@ def _card_text(product: dict, lang: str) -> str:
 def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     # --- Начало заказа ---
 
-    @dp.message(F.text.in_({"📦 Buyurtma berish", "📦 Сделать заказ"}))
+    @dp.message(F.text == "📦 Сделать заказ")
     async def start_order(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await state.update_data(cart={}, from_webapp=False)
@@ -118,7 +110,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         product_id = call.data.replace("cat_", "")
         product = get_product(product_id)
         if not product:
-            await call.answer("Mahsulot topilmadi" if lang == "uz" else "Товар не найден", show_alert=True)
+            await call.answer("Товар не найден", show_alert=True)
             return
 
         await state.update_data(current_product_id=product_id, current_qty=1)
@@ -159,7 +151,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         product_id = str(data.get("current_product_id"))
         product = get_product(product_id)
         if not product:
-            await call.answer("Mahsulot topilmadi" if lang == "uz" else "Товар не найден", show_alert=True)
+            await call.answer("Товар не найден", show_alert=True)
             return
 
         if call.data == "qty_plus":
@@ -205,13 +197,10 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
         await state.update_data(cart=cart)
 
-        total_label = "Jami" if lang == "uz" else "Итого"
-        currency = "so'm" if lang == "uz" else "сум"
-
         cart_text = LANGUAGES[lang]["cart_title"]
         products_list, total_sum = format_cart_summary(cart, lang)
         cart_text += products_list
-        cart_text += f"\n💰 <b>{total_label}: {format_price(total_sum)} {currency}</b>\n"
+        cart_text += f"\n💰 <b>Итого: {format_price(total_sum)} сум</b>\n"
         cart_text += LANGUAGES[lang]["cart_footer"]
 
         try:
@@ -240,7 +229,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
     # --- Корзина ---
 
-    @dp.message(OrderState.waiting_for_cart, F.text.in_({"➕ Yana mahsulot qo'shish", "➕ Добавить ещё товар"}))
+    @dp.message(OrderState.waiting_for_cart, F.text == "➕ Добавить ещё товар")
     async def add_more(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await state.set_state(OrderState.waiting_for_product)
@@ -249,7 +238,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             reply_markup=get_categories_keyboard(lang),
         )
 
-    @dp.message(OrderState.waiting_for_cart, F.text.in_({"✅ Buyurtmani yakunlash", "✅ Завершить заказ"}))
+    @dp.message(OrderState.waiting_for_cart, F.text == "✅ Завершить заказ")
     async def finish_order(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await message.answer(LANGUAGES[lang]["ask_location"], reply_markup=get_location_keyboard(lang))
@@ -291,9 +280,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         cart = data.get("cart", {})
 
         products_list, total_sum = format_cart_summary(cart, lang)
-        total_label = "Jami summa" if lang == "uz" else "Итоговая сумма"
-        currency = "so'm" if lang == "uz" else "сум"
-        products_list += f"\n💰 <b>{total_label}: {format_price(total_sum)} {currency}</b>"
+        products_list += f"\n💰 <b>Итоговая сумма: {format_price(total_sum)} сум</b>"
 
         checkout_text = LANGUAGES[lang]["checkout"].format(
             name="",
@@ -311,7 +298,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
     # --- Подтверждение ---
 
-    @dp.message(OrderState.waiting_for_confirmation, F.text.in_({"Ha, tasdiqlayman", "Да, подтверждаю"}))
+    @dp.message(OrderState.waiting_for_confirmation, F.text == "Да, подтверждаю")
     async def confirm_order(message: types.Message, state: FSMContext):
         from bot.handlers.notify import send_order_notification
 
@@ -329,7 +316,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         await message.answer(LANGUAGES[lang]["success"], reply_markup=get_main_keyboard(lang))
         await state.clear()
 
-    @dp.message(OrderState.waiting_for_confirmation, F.text.in_({"Bekor qilish", "Отменить"}))
+    @dp.message(OrderState.waiting_for_confirmation, F.text == "Отменить")
     async def cancel_order(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await message.answer(LANGUAGES[lang]["canceled"], reply_markup=get_main_keyboard(lang))

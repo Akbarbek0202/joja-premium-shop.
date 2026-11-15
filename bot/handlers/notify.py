@@ -18,20 +18,14 @@ async def send_order_notification(bot: Bot, data: dict, lang: str) -> bool:
     lon = data.get("lon")
 
     products_list, total_sum = format_cart_summary(cart, lang)
-    total_label = "Jami summa" if lang == "uz" else "Итоговая сумма"
-    currency = "so'm" if lang == "uz" else "сум"
-    products_list += f"\n💰 <b>{total_label}: {format_price(total_sum)} {currency}</b>"
+    products_list += f"\n💰 <b>Итоговая сумма: {format_price(total_sum)} сум</b>"
 
     order_text = (
-        "🔔 <b>Yangi buyurtma keldi!</b>\n\n"
-        if lang == "uz"
-        else "🔔 <b>Новый заказ!</b>\n\n"
+        "🔔 <b>Новый заказ!</b>\n\n"
+        f"🏪 <b>Магазин:</b> {store_name}\n\n"
+        f"📦 <b>Состав заказа:</b>\n{products_list}\n"
+        f"📱 <b>Телефон:</b> {phone}"
     )
-    order_text += (
-        f"🏪 <b>Do'kon:</b> {store_name}\n\n" if lang == "uz" else f"🏪 <b>Магазин:</b> {store_name}\n\n"
-    )
-    order_text += f"📦 <b>Buyurtma tarkibi:</b>\n{products_list}\n" if lang == "uz" else f"📦 <b>Состав заказа:</b>\n{products_list}\n"
-    order_text += f"📱 <b>Telefon:</b> {phone}" if lang == "uz" else f"📱 <b>Телефон:</b> {phone}"
 
     try:
         await bot.send_message(chat_id=PAPA_ID, text=order_text)
@@ -39,5 +33,5 @@ async def send_order_notification(bot: Bot, data: dict, lang: str) -> bool:
             await bot.send_location(chat_id=PAPA_ID, latitude=lat, longitude=lon)
         return True
     except Exception as e:
-        logger.error(f"Xatolik: {e}")
+        logger.error("Не удалось отправить уведомление о заказе: %s", e)
         return False

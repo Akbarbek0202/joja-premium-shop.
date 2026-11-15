@@ -28,6 +28,7 @@ from bot.services.catalog import (
 )
 from bot.states import AdminState
 from bot.utils import get_lang
+from bot.i18n import localized_product_field
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,8 @@ logger = logging.getLogger(__name__)
 new_product: dict = {}
 
 ADMIN_MENU_TEXT = (
-    "🛠 <b>Admin panel</b>\n\n"
-    "Bu yerda siz mahsulotlarni boshqarishingiz mumkin.\n"
-    "Здесь вы можете управлять товарами."
+    "🛠 <b>Панель администратора</b>\n\n"
+    "Здесь можно управлять товарами."
 )
 
 
@@ -71,7 +71,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_entry(message: types.Message, state: FSMContext):
         if not _is_admin(message):
             await message.answer(
-                "⛔️ Bu bo'lim faqat admin uchun! / Этот раздел только для админа!"
+                "⛔️ Этот раздел доступен только администратору."
             )
             return
 
@@ -91,7 +91,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_cancel(call: types.CallbackQuery, state: FSMContext):
         _reset_draft()
         await state.set_state(AdminState.menu)
-        await _edit_or_answer(call, LANGUAGES["uz"]["admin_canceled"], get_admin_menu())
+        await _edit_or_answer(call, LANGUAGES["ru"]["admin_canceled"], get_admin_menu())
         await call.answer()
 
     # --- Добавление товара: шаг 1. Название ---
@@ -100,18 +100,18 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_add_start(call: types.CallbackQuery, state: FSMContext):
         _reset_draft()
         await state.set_state(AdminState.waiting_for_name)
-        await _edit_or_answer(call, LANGUAGES["uz"]["admin_ask_name"], get_admin_cancel_keyboard())
+        await _edit_or_answer(call, LANGUAGES["ru"]["admin_ask_name"], get_admin_cancel_keyboard())
         await call.answer()
 
     @dp.message(AdminState.waiting_for_name, F.text)
     async def admin_product_name(message: types.Message, state: FSMContext):
         new_product["name"] = message.text.strip()
         await state.set_state(AdminState.waiting_for_price)
-        await message.answer(LANGUAGES["uz"]["admin_ask_price"], reply_markup=get_admin_cancel_keyboard())
+        await message.answer(LANGUAGES["ru"]["admin_ask_price"], reply_markup=get_admin_cancel_keyboard())
 
     @dp.message(AdminState.waiting_for_name)
     async def admin_invalid_name(message: types.Message):
-        await message.answer("⚠️ Iltimos, matn yuboring! / Отправьте текст!")
+        await message.answer("⚠️ Отправьте текст.")
 
     # --- Шаг 2. Цена ---
 
@@ -120,23 +120,21 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         raw = (
             message.text.strip()
             .replace(" ", "")
-            .replace("so'm", "")
             .replace("сум", "")
-            .replace("sum", "")
         )
         try:
             price = int(float(raw))
         except ValueError:
-            await message.answer(LANGUAGES["uz"]["admin_invalid_price"])
+            await message.answer(LANGUAGES["ru"]["admin_invalid_price"])
             return
 
         new_product["price"] = price
         await state.set_state(AdminState.waiting_for_description)
-        await message.answer(LANGUAGES["uz"]["admin_ask_desc"], reply_markup=get_admin_cancel_keyboard())
+        await message.answer(LANGUAGES["ru"]["admin_ask_desc"], reply_markup=get_admin_cancel_keyboard())
 
     @dp.message(AdminState.waiting_for_price)
     async def admin_invalid_price(message: types.Message):
-        await message.answer(LANGUAGES["uz"]["admin_invalid_price"])
+        await message.answer(LANGUAGES["ru"]["admin_invalid_price"])
 
     # --- Шаг 3. Описание ---
 
@@ -144,11 +142,11 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_product_description(message: types.Message, state: FSMContext):
         new_product["description"] = " ".join(message.text.split())
         await state.set_state(AdminState.waiting_for_image)
-        await message.answer(LANGUAGES["uz"]["admin_ask_image"], reply_markup=get_admin_skip_image_keyboard())
+        await message.answer(LANGUAGES["ru"]["admin_ask_image"], reply_markup=get_admin_skip_image_keyboard())
 
     @dp.message(AdminState.waiting_for_description)
     async def admin_invalid_desc(message: types.Message):
-        await message.answer("⚠️ Iltimos, matn yuboring! / Отправьте текст!")
+        await message.answer("⚠️ Отправьте текст.")
 
     # --- Шаг 4. Фото (загрузка или URL) ---
 
@@ -166,8 +164,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         url = message.text.strip()
         if not url.lower().startswith(("http://", "https://")):
             await message.answer(
-                "⚠️ Link http:// yoki https:// bilan boshlanishi kerak! / "
-                "Ссылка должна начинаться с http(s)://"
+                "⚠️ Ссылка должна начинаться с http:// или https://."
             )
             return
         new_product["image"] = url
@@ -182,7 +179,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def _ask_category(message: types.Message, state: FSMContext):
         await state.set_state(AdminState.waiting_for_category)
         await message.answer(
-            LANGUAGES["uz"]["admin_ask_category"],
+            LANGUAGES["ru"]["admin_ask_category"],
             reply_markup=get_admin_categories_keyboard(),
         )
 
@@ -192,14 +189,14 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_choose_category(call: types.CallbackQuery, state: FSMContext):
         category = call.data.replace("adm_cat_", "")
         product = add_product(
-            name=new_product.get("name", "Noma'lum"),
+            name=new_product.get("name", "Товар"),
             price=new_product.get("price", 0),
             description=new_product.get("description", ""),
             image=new_product.get("image", ""),
             category=category,
         )
         lang = await get_lang(state)
-        cat_title = CATEGORY_NAMES.get(category, {}).get(lang, category)
+        cat_title = CATEGORY_NAMES.get(category, category)
         await _edit_or_answer(
             call,
             LANGUAGES[lang]["admin_added"].format(
@@ -223,12 +220,12 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         for p in products:
             by_cat.setdefault(p["category"], []).append(p)
 
-        lines = ["📋 <b>Mahsulotlar ro'yxati / Список товаров:</b>"]
+        lines = ["📋 <b>Список товаров:</b>"]
         for cat, items in by_cat.items():
-            cat_title = CATEGORY_NAMES.get(cat, {}).get(lang, cat)
+            cat_title = CATEGORY_NAMES.get(cat, cat)
             lines.append(f"\n<b>{cat_title}</b>")
             for p in items:
-                name = p["name"] if lang == "uz" else p.get("name_ru", p["name"])
+                name = localized_product_field(p, "name") or "Товар"
                 lines.append(f"  • {name} — {format_price(p['price'])}")
 
         text = "\n".join(lines)
@@ -279,7 +276,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
         await state.update_data(edit_product_id=product_id)
         await state.set_state(AdminState.waiting_for_edit_fields)
-        name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+        name = localized_product_field(product, "name") or "Товар"
         await _edit_or_answer(
             call,
             LANGUAGES[lang]["admin_edit_fields"].format(name=_escape_html(name)),
@@ -297,7 +294,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         product = get_product(data.get("edit_product_id", ""))
         lang = await get_lang(state)
         if not product or field not in {
-            "name", "name_ru", "price", "description", "description_ru", "image", "category"
+            "name_ru", "price", "description_ru", "image", "category"
         }:
             await call.answer(LANGUAGES[lang]["admin_edit_not_found"], show_alert=True)
             return
@@ -313,10 +310,8 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             await state.update_data(edit_field=field)
             await state.set_state(AdminState.waiting_for_edit_value)
             prompts = {
-                "name": "admin_edit_ask_name",
                 "name_ru": "admin_edit_ask_name_ru",
                 "price": "admin_edit_ask_price",
-                "description": "admin_edit_ask_description",
                 "description_ru": "admin_edit_ask_description_ru",
                 "image": "admin_edit_ask_image",
             }
@@ -333,7 +328,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             await message.answer(LANGUAGES[lang]["admin_edit_not_found"], reply_markup=get_admin_menu())
             return
         await state.set_state(AdminState.waiting_for_edit_fields)
-        name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+        name = localized_product_field(product, "name") or "Товар"
         await message.answer(
             f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
             f"{LANGUAGES[lang]['admin_edit_fields'].format(name=_escape_html(name))}",
@@ -347,18 +342,18 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         value = message.text.strip()
         lang = await get_lang(state)
         if field == "price":
-            raw = value.replace(" ", "").replace("so'm", "").replace("сум", "").replace("sum", "")
+            raw = value.replace(" ", "").replace("сум", "")
             try:
                 value = int(float(raw))
             except ValueError:
                 await message.answer(LANGUAGES[lang]["admin_invalid_price"])
                 return
-        elif field in {"description", "description_ru"}:
+        elif field == "description_ru":
             value = " ".join(value.split())
         elif field == "image" and not value.lower().startswith(("http://", "https://")):
             await message.answer(LANGUAGES[lang]["admin_edit_invalid_image"])
             return
-        elif field not in {"name", "name_ru", "description", "description_ru", "image"}:
+        elif field not in {"name_ru", "description_ru", "image"}:
             await message.answer(LANGUAGES[lang]["admin_edit_not_found"])
             return
         await save_edited_value(message, state, field, value)
@@ -388,7 +383,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
         else:
             await state.set_state(AdminState.waiting_for_edit_fields)
-            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            name = localized_product_field(product, "name") or "Товар"
             await _edit_or_answer(
                 call,
                 f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
@@ -410,7 +405,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
         else:
             await state.set_state(AdminState.waiting_for_edit_fields)
-            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            name = localized_product_field(product, "name") or "Товар"
             await _edit_or_answer(
                 call,
                 LANGUAGES[lang]["admin_edit_fields"].format(name=_escape_html(name)),
@@ -431,7 +426,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             await _edit_or_answer(call, LANGUAGES[lang]["admin_edit_not_found"], get_admin_menu())
         else:
             await state.set_state(AdminState.waiting_for_edit_fields)
-            name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+            name = localized_product_field(product, "name") or "Товар"
             await _edit_or_answer(
                 call,
                 f"{LANGUAGES[lang]['admin_edit_saved']}\n\n"
@@ -456,7 +451,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             return
 
         await state.set_state(AdminState.waiting_for_delete)
-        await _edit_or_answer(call, LANGUAGES["uz"]["admin_delete_choose"], get_admin_products_keyboard(custom))
+        await _edit_or_answer(call, LANGUAGES["ru"]["admin_delete_choose"], get_admin_products_keyboard(custom))
         await call.answer()
 
     @dp.callback_query(AdminState.waiting_for_delete, F.data.startswith("adm_del_"))
@@ -466,7 +461,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         lang = await get_lang(state)
 
         if removed:
-            name = removed["name"] if lang == "uz" else removed.get("name_ru", removed["name"])
+            name = localized_product_field(removed, "name") or "Товар"
             await _edit_or_answer(call, LANGUAGES[lang]["admin_deleted"].format(name=name), get_admin_menu())
         else:
             await _edit_or_answer(call, LANGUAGES[lang]["admin_nothing_to_delete"], get_admin_menu())
@@ -497,4 +492,4 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         if not _is_admin(message):
             await state.clear()
             return
-        await message.answer(LANGUAGES["uz"]["admin_delete_choose"])
+        await message.answer(LANGUAGES["ru"]["admin_delete_choose"])

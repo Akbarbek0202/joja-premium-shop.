@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Plus, Minus, ShoppingBag } from 'lucide-react'
-import { toUzbekCyrillic, translations } from './components/language'
+import { translations } from './components/language'
 
 const tg = window.Telegram?.WebApp;
 
@@ -11,8 +11,6 @@ const App = () => {
   const [cart, setCart] = useState({})
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('all')
-  const [lang, setLang] = useState('uz')
-
   useEffect(() => {
     let active = true
 
@@ -21,7 +19,7 @@ const App = () => {
         if (active) setProducts(res.data)
       })
       .catch(err => {
-        if (active) console.log("Xatolik:", err)
+        if (active) console.error("Ошибка загрузки каталога:", err)
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -57,37 +55,29 @@ const App = () => {
     ? products
     : products.filter(item => item.category === activeCategory)
 
-  const t = translations[lang] || translations.uz;
+  const t = translations.ru
 
-  const getProductName = (name) => {
-    if (!name) return '';
-    const cleanName = name.trim();
-    return t.products?.[cleanName]
-      || t.products?.[name]
-      || (lang === 'uz_cyrl' ? toUzbekCyrillic(cleanName) : name);
-  };
+  const getProductName = (item) => item.name_ru
+    || t.products?.[item.name?.trim()]
+    || 'Товар'
 
-  const getProductDesc = (desc) => {
-    if (!desc) return '';
-    const cleanDesc = desc.trim();
-    return t.descriptions?.[cleanDesc]
-      || t.descriptions?.[desc]
-      || (lang === 'uz_cyrl' ? toUzbekCyrillic(cleanDesc) : desc);
-  };
+  const getProductDesc = (item) => item.description_ru
+    || t.descriptions?.[item.description?.trim()]
+    || 'Описание отсутствует'
 
   const handleSendOrder = () => {
     const orderItems = products
       .filter(item => cart[item.id])
       .map(item => ({
         id: item.id,
-        name: getProductName(item.name),
+        name: getProductName(item),
         price: item.price,
         quantity: cart[item.id],
         total: item.price * cart[item.id]
       }));
 
     const orderData = {
-      lang: lang,
+      lang: 'ru',
       items: orderItems,
       totalPrice: totalPrice
     };
@@ -96,7 +86,7 @@ const App = () => {
       tg.sendData(JSON.stringify(orderData));
       tg.close();
     } else {
-      console.log("Telegram topilmadi. Buyurtma:", orderData);
+      console.log("Telegram не обнаружен. Заказ:", orderData);
     }
   };
 
@@ -108,25 +98,6 @@ const App = () => {
             <h1 className="text-xl font-bold text-zinc-100 tracking-tight">
               {t.title} <span className="text-xs font-serif italic text-rose-600 ml-1">{t.subTitle}</span>
             </h1>
-          </div>
-
-          <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800 text-[10px] font-bold">
-            {[
-              { code: 'uz', label: 'UZ-L', title: "O'zbekcha, lotin" },
-              { code: 'uz_cyrl', label: 'УЗ-К', title: 'Ўзбекча, кирилл' },
-              { code: 'ru', label: 'RU', title: 'Русский' }
-            ].map(language => (
-              <button
-                key={language.code}
-                title={language.title}
-                aria-label={language.title}
-                aria-pressed={lang === language.code}
-                onClick={() => setLang(language.code)}
-                className={`px-1.5 py-1 rounded-md transition-all duration-200 ${lang === language.code ? 'bg-rose-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-              >
-                {language.label}
-              </button>
-            ))}
           </div>
 
           <div className="relative p-3 bg-zinc-900 text-zinc-400 rounded-xl border border-zinc-800">
@@ -178,7 +149,7 @@ const App = () => {
                     {item.image ? (
                       <img
                         src={item.image}
-                        alt={item.name}
+                        alt={getProductName(item)}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -193,10 +164,10 @@ const App = () => {
                   </div>
 
                   <h3 className="font-serif italic text-sm md:text-base text-zinc-900 mt-3 font-bold tracking-tight min-h-[44px] flex items-center">
-                    {getProductName(item.name)}
+                    {getProductName(item)}
                   </h3>
                   <p className="text-[11px] text-stone-500 mt-1 leading-snug line-clamp-2 min-h-[32px]">
-                    {getProductDesc(item.description)}
+                    {getProductDesc(item)}
                   </p>
                 </div>
 
@@ -244,7 +215,7 @@ const App = () => {
           >
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-rose-500" />
-              <span>{t.buyurtma} ({totalItems})</span>
+              <span>{t.order} ({totalItems})</span>
             </div>
 
             <span className="font-bold text-rose-400 font-mono">

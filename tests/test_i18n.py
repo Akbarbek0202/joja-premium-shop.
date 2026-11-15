@@ -1,53 +1,66 @@
 import unittest
 
-from bot.i18n import localized_product_field, to_uzbek_cyrillic
+from bot.catalog_data import BASE_PRODUCTS
+from bot.i18n import localized_product_field
+from bot.keyboards.admin import (
+    get_admin_categories_keyboard,
+    get_admin_menu,
+)
+from bot.keyboards.inline import (
+    get_categories_keyboard,
+    get_category_products_keyboard,
+)
 from bot.keyboards.reply import (
-    CANCEL_ORDER_BUTTONS,
-    CART_ADD_BUTTONS,
-    CART_FINISH_BUTTONS,
-    CONFIRM_ORDER_BUTTONS,
-    LANGUAGE_BUTTONS,
-    MAIN_ORDER_BUTTONS,
     get_cart_keyboard,
     get_confirm_keyboard,
     get_main_keyboard,
 )
+from bot.keyboards.admin import get_admin_products_keyboard
 from bot.locales import CATEGORY_NAMES, LANGUAGES
 
 
-class UzbekCyrillicTests(unittest.TestCase):
-    def test_transliterates_uzbek_digraphs_and_apostrophes(self):
-        self.assertEqual(
-            to_uzbek_cyrillic("O'zbekcha, Shirin jo'ja: g'oz, so'm"),
-            "Ўзбекча, Ширин жўжа: ғоз, сўм",
+class RussianOnlyTests(unittest.TestCase):
+    def test_only_russian_locale_is_available(self):
+        self.assertEqual(set(LANGUAGES), {"ru"})
+        self.assertTrue(all(isinstance(name, str) for name in CATEGORY_NAMES.values()))
+        self.assertTrue(all(product.get("name_ru") for product in BASE_PRODUCTS))
+        self.assertTrue(all(product.get("description_ru") for product in BASE_PRODUCTS))
+
+    def test_product_fields_resolve_to_russian_catalog_values(self):
+        product = {"name": "Boldir 🍗", "name_ru": "Голень 🍗"}
+        self.assertEqual(localized_product_field(product, "name"), "Голень 🍗")
+        self.assertEqual(localized_product_field({"name": "Голень 🍗"}, "name"), "Голень 🍗")
+        self.assertEqual(localized_product_field({"name": "Boldir 🍗"}, "name"), "")
+
+    def test_all_bot_keyboards_use_russian_labels(self):
+        keyboards = (
+            get_main_keyboard(),
+            get_cart_keyboard(),
+            get_confirm_keyboard(),
+        )
+        labels = [
+            button.text
+            for keyboard in keyboards
+            for row in keyboard.keyboard
+            for button in row
+        ]
+        labels.extend(
+            button.text
+            for keyboard in (
+                get_admin_menu(),
+                get_admin_categories_keyboard(),
+                get_admin_products_keyboard(BASE_PRODUCTS, action="edit"),
+                get_categories_keyboard(),
+                get_category_products_keyboard("parts"),
+            )
+            for row in keyboard.inline_keyboard
+            for button in row
         )
 
-    def test_preserves_html_tags_in_translated_bot_messages(self):
-        self.assertEqual(
-            to_uzbek_cyrillic("<b>{product}</b> uchun {qty} dona"),
-            "<b>{product}</b> учун {qty} дона",
-        )
-        self.assertIn("{product}", LANGUAGES["uz_cyrl"]["ask_qty"])
-        self.assertIn("Жўжа", LANGUAGES["uz_cyrl"]["ask_qty"].format(product="Жўжа"))
-
-    def test_language_catalogs_include_all_three_choices(self):
-        self.assertEqual(set(LANGUAGES), {"uz", "uz_cyrl", "ru"})
-        self.assertTrue(all("uz_cyrl" in names for names in CATEGORY_NAMES.values()))
-        product = {"name": "Jo'ja", "name_ru": "Цыплёнок"}
-        self.assertEqual(localized_product_field(product, "name", "uz_cyrl"), "Жўжа")
-        self.assertEqual(localized_product_field(product, "name", "ru"), "Цыплёнок")
-
-    def test_bot_buttons_match_order_handlers_for_all_languages(self):
-        self.assertEqual(set(LANGUAGE_BUTTONS), {"uz", "uz_cyrl", "ru"})
-        for lang in LANGUAGES:
-            with self.subTest(lang=lang):
-                self.assertIn(get_main_keyboard(lang).keyboard[1][0].text, MAIN_ORDER_BUTTONS)
-                cart_keyboard = get_cart_keyboard(lang)
-                self.assertIn(cart_keyboard.keyboard[0][0].text, CART_ADD_BUTTONS)
-                self.assertIn(cart_keyboard.keyboard[1][0].text, CART_FINISH_BUTTONS)
-                confirm_keyboard = get_confirm_keyboard(lang)
-                self.assertIn(confirm_keyboard.keyboard[0][0].text, CONFIRM_ORDER_BUTTONS)
-                self.assertIn(confirm_keyboard.keyboard[1][0].text, CANCEL_ORDER_BUTTONS)
+        self.assertIn("📦 Сделать заказ", labels)
+        self.assertIn("✅ Завершить заказ", labels)
+        self.assertIn("Да, подтверждаю", labels)
+        self.assertFalse(any("O'zbekcha" in label or "Buyurtma" in label for label in labels))
 
 
 if __name__ == "__main__":

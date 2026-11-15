@@ -96,9 +96,11 @@ def add_product(name: str, price: int, description: str, image: str, category: s
     product = {
         "id": new_id,
         "name": name,
+        "name_ru": name,
         "category": category,
         "price": price,
         "description": description,
+        "description_ru": description,
         "image": image or "",
     }
     products.append(product)
