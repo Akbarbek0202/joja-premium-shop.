@@ -1,3 +1,6 @@
+from bot.i18n import _translate_tree_to_uzbek_cyrillic
+
+
 # --- Названия категорий ---
 
 CATEGORY_NAMES = {
@@ -138,4 +141,13 @@ LANGUAGES = {
         # Заказ папе
         "notify_new_order": "🔔 <b>Новый заказ!</b>",
     },
+}
+
+LANGUAGES["uz_cyrl"] = _translate_tree_to_uzbek_cyrillic(LANGUAGES["uz"])
+CATEGORY_NAMES = {
+    category: {
+        **names,
+        "uz_cyrl": _translate_tree_to_uzbek_cyrillic(names["uz"]),
+    }
+    for category, names in CATEGORY_NAMES.items()
 }

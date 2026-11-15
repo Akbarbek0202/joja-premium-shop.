@@ -1,12 +1,15 @@
 from aiogram.fsm.context import FSMContext
 
+from bot.i18n import localized_product_field, localized_uzbek_text
+from bot.locales import LANGUAGES
 from bot.services.catalog import format_price
 
 
 async def get_lang(state: FSMContext) -> str:
     """Достаёт язык из FSM-данных (по умолчанию uz)."""
     data = await state.get_data()
-    return data.get("lang", "uz")
+    lang = data.get("lang", "uz")
+    return lang if isinstance(lang, str) and lang in LANGUAGES else "uz"
 
 
 def format_cart_summary(cart: dict, lang: str) -> tuple[str, float]:
@@ -29,7 +32,7 @@ def format_cart_summary(cart: dict, lang: str) -> tuple[str, float]:
 
             product = get_product(str(prod_key))
             if product:
-                prod_name = product["name"] if lang == "uz" else product.get("name_ru", product["name"])
+                prod_name = localized_product_field(product, "name", lang)
                 price = product["price"]
             else:
                 prod_name = str(prod_key).replace("_", " ").capitalize()
@@ -39,9 +42,14 @@ def format_cart_summary(cart: dict, lang: str) -> tuple[str, float]:
         item_sum = price * qty
         total_sum += item_sum
 
-        if lang == "uz":
-            products_list += f"• {prod_name}: {qty} dona x {format_price(price)} = {format_price(item_sum)} so'm\n"
-        else:
+        if lang == "ru":
             products_list += f"• {prod_name}: {qty} шт. x {format_price(price)} = {format_price(item_sum)} сум\n"
+        else:
+            quantity_label = localized_uzbek_text("dona", lang)
+            currency = localized_uzbek_text("so'm", lang)
+            products_list += (
+                f"• {prod_name}: {qty} {quantity_label} x "
+                f"{format_price(price)} = {format_price(item_sum)} {currency}\n"
+            )
 
     return products_list, total_sum
