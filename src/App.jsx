@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Minus, ShoppingBag } from 'lucide-react'
 import { toUzbekCyrillic, translations } from './components/language'
 
@@ -13,24 +13,29 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('all')
   const [lang, setLang] = useState('uz')
 
-  async function fetchChicken() {
-    try {
-      const res = await axios.get(apiURL)
-      setProducts(res.data)
-    } catch (err) {
-      console.log("Xatolik:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    fetchChicken()
+    let active = true
+
+    axios.get(apiURL)
+      .then(res => {
+        if (active) setProducts(res.data)
+      })
+      .catch(err => {
+        if (active) console.log("Xatolik:", err)
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
     if (tg) {
       tg.ready();
       tg.expand();
     }
-  }, [])
+
+    return () => {
+      active = false
+    }
+  }, [apiURL])
 
   const toggleCart = (id, action) => {
     setCart(prev => {

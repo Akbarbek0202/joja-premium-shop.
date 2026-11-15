@@ -37,15 +37,17 @@ class UzbekCyrillicTests(unittest.TestCase):
         self.assertEqual(localized_product_field(product, "name", "uz_cyrl"), "Жўжа")
         self.assertEqual(localized_product_field(product, "name", "ru"), "Цыплёнок")
 
-    def test_cyrillic_bot_buttons_match_order_handlers(self):
+    def test_bot_buttons_match_order_handlers_for_all_languages(self):
         self.assertEqual(set(LANGUAGE_BUTTONS), {"uz", "uz_cyrl", "ru"})
-        self.assertIn(get_main_keyboard("uz_cyrl").keyboard[1][0].text, MAIN_ORDER_BUTTONS)
-        cart_keyboard = get_cart_keyboard("uz_cyrl")
-        self.assertIn(cart_keyboard.keyboard[0][0].text, CART_ADD_BUTTONS)
-        self.assertIn(cart_keyboard.keyboard[1][0].text, CART_FINISH_BUTTONS)
-        confirm_keyboard = get_confirm_keyboard("uz_cyrl")
-        self.assertIn(confirm_keyboard.keyboard[0][0].text, CONFIRM_ORDER_BUTTONS)
-        self.assertIn(confirm_keyboard.keyboard[1][0].text, CANCEL_ORDER_BUTTONS)
+        for lang in LANGUAGES:
+            with self.subTest(lang=lang):
+                self.assertIn(get_main_keyboard(lang).keyboard[1][0].text, MAIN_ORDER_BUTTONS)
+                cart_keyboard = get_cart_keyboard(lang)
+                self.assertIn(cart_keyboard.keyboard[0][0].text, CART_ADD_BUTTONS)
+                self.assertIn(cart_keyboard.keyboard[1][0].text, CART_FINISH_BUTTONS)
+                confirm_keyboard = get_confirm_keyboard(lang)
+                self.assertIn(confirm_keyboard.keyboard[0][0].text, CONFIRM_ORDER_BUTTONS)
+                self.assertIn(confirm_keyboard.keyboard[1][0].text, CANCEL_ORDER_BUTTONS)
 
 
 if __name__ == "__main__":
