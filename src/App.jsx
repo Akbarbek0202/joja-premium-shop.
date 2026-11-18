@@ -4,6 +4,19 @@ import { Plus, Minus, ShoppingBag } from 'lucide-react'
 import { translations } from './components/language'
 
 const tg = window.Telegram?.WebApp;
+const stripEmoji = (value = '') => [...value]
+  .filter((character) => {
+    const codePoint = character.codePointAt(0)
+    return !(
+      /\p{Extended_Pictographic}|\p{Emoji_Modifier}/u.test(character)
+      || codePoint === 0xFE0F
+      || codePoint === 0x200D
+      || codePoint === 0x20E3
+      || (codePoint >= 0x1F1E6 && codePoint <= 0x1F1FF)
+    )
+  })
+  .join('')
+  .trim()
 
 const App = () => {
   const apiURL = import.meta.env.VITE_API_URL
@@ -57,13 +70,19 @@ const App = () => {
 
   const t = translations.ru
 
-  const getProductName = (item) => item.name_ru
-    || t.products?.[item.name?.trim()]
-    || 'Товар'
+  const getProductName = (item) => stripEmoji(
+    item.name_ru
+      || t.products?.[stripEmoji(item.name)]
+      || 'Товар'
+  )
 
-  const getProductDesc = (item) => item.description_ru
-    || t.descriptions?.[item.description?.trim()]
-    || 'Описание отсутствует'
+  const getProductImage = (item) => t.productImages?.[String(item.id)] ?? item.image
+
+  const getProductDesc = (item) => stripEmoji(
+    item.description_ru
+      || t.descriptions?.[item.description?.trim()]
+      || 'Описание отсутствует'
+  )
 
   const handleSendOrder = () => {
     const orderItems = products
@@ -146,9 +165,9 @@ const App = () => {
               <div key={item.id} className="bg-[#f9f9f7] rounded-2xl p-4 flex flex-col justify-between border border-stone-200/60 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.2)] transition-all duration-300 hover:shadow-[0_20px_35px_-5px_rgba(0,0,0,0.35)] hover:-translate-y-0.5">
                 <div>
                   <div className="w-full bg-[#eeede9] rounded-xl overflow-hidden shadow-inner border border-stone-300/40 flex items-center justify-center text-stone-400" style={{ height: '128px', minHeight: '128px', maxHeight: '128px' }}>
-                    {item.image ? (
+                    {getProductImage(item) ? (
                       <img
-                        src={item.image}
+                        src={getProductImage(item)}
                         alt={getProductName(item)}
                         style={{
                           width: '100%',

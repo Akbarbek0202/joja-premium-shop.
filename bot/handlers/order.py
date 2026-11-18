@@ -33,9 +33,9 @@ def _card_text(product: dict, lang: str) -> str:
     name = localized_product_field(product, "name") or "Товар"
     description = localized_product_field(product, "description") or "Описание отсутствует"
     return (
-        f"🍗 <b>{name}</b>\n\n"
-        f"💰 Цена: {format_price(product['price'])} сум\n\n"
-        f"📝 {description}\n\n"
+        f"<b>{name}</b>\n\n"
+        f"Цена: {format_price(product['price'])} сум\n\n"
+        f"{description}\n\n"
         f"Выберите количество:"
     )
 
@@ -43,7 +43,7 @@ def _card_text(product: dict, lang: str) -> str:
 def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     # --- Начало заказа ---
 
-    @dp.message(F.text == "📦 Сделать заказ")
+    @dp.message(F.text == "Сделать заказ")
     async def start_order(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await state.update_data(cart={}, from_webapp=False)
@@ -208,7 +208,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         cart_text = LANGUAGES[lang]["cart_title"]
         products_list, total_sum = format_cart_summary(cart, lang)
         cart_text += products_list
-        cart_text += f"\n💰 <b>Итого: {format_price(total_sum)} сум</b>\n"
+        cart_text += f"\n<b>Итого: {format_price(total_sum)} сум</b>\n"
         cart_text += LANGUAGES[lang]["cart_footer"]
 
         try:
@@ -237,7 +237,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
     # --- Корзина ---
 
-    @dp.message(OrderState.waiting_for_cart, F.text == "➕ Добавить ещё товар")
+    @dp.message(OrderState.waiting_for_cart, F.text == "Добавить ещё товар")
     async def add_more(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await state.set_state(OrderState.waiting_for_product)
@@ -246,7 +246,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
             reply_markup=get_categories_keyboard(lang),
         )
 
-    @dp.message(OrderState.waiting_for_cart, F.text == "✅ Завершить заказ")
+    @dp.message(OrderState.waiting_for_cart, F.text == "Завершить заказ")
     async def finish_order(message: types.Message, state: FSMContext):
         lang = await get_lang(state)
         await message.answer(LANGUAGES[lang]["ask_location"], reply_markup=get_location_keyboard(lang))
@@ -288,7 +288,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         cart = data.get("cart", {})
 
         products_list, total_sum = format_cart_summary(cart, lang)
-        products_list += f"\n💰 <b>Итоговая сумма: {format_price(total_sum)} сум</b>"
+        products_list += f"\n<b>Итоговая сумма: {format_price(total_sum)} сум</b>"
 
         checkout_text = LANGUAGES[lang]["checkout"].format(
             name="",

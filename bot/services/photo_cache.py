@@ -15,6 +15,7 @@ Telegram отдаёт каждому загруженному/отправлен
 import json
 import logging
 import os
+import re
 import threading
 from io import BytesIO
 
@@ -27,6 +28,8 @@ from PIL import Image, ImageOps
 logger = logging.getLogger(__name__)
 
 CACHE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "bot", "data", "photo_cache.json")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PRODUCT_PHOTO_DIR = os.path.join(PROJECT_ROOT, "public", "products")
 MAX_IMAGE_SIZE = 20 * 1024 * 1024
 
 _lock = threading.Lock()
@@ -73,6 +76,17 @@ def cache_file_id(url: str, file_id: str) -> None:
 
 
 async def _download_image(url: str) -> bytes:
+    if url.startswith("/products/"):
+        filename = url.removeprefix("/products/")
+        if not re.fullmatch(r"[A-Za-z0-9_-]+\.jpg", filename):
+            raise ValueError("Недопустимый путь к локальному фото товара")
+        image_path = os.path.join(PRODUCT_PHOTO_DIR, filename)
+        with open(image_path, "rb") as image_file:
+            image_data = image_file.read(MAX_IMAGE_SIZE + 1)
+        if len(image_data) > MAX_IMAGE_SIZE:
+            raise ValueError("Размер фото товара превышает 20 МБ")
+        return image_data
+
     timeout = aiohttp.ClientTimeout(total=20)
     chunks = []
     size = 0

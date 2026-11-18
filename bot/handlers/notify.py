@@ -18,13 +18,13 @@ async def send_order_notification(bot: Bot, data: dict, lang: str) -> bool:
     lon = data.get("lon")
 
     products_list, total_sum = format_cart_summary(cart, lang)
-    products_list += f"\n💰 <b>Итоговая сумма: {format_price(total_sum)} сум</b>"
+    products_list += f"\n<b>Итоговая сумма: {format_price(total_sum)} сум</b>"
 
     order_text = (
-        "🔔 <b>Новый заказ!</b>\n\n"
-        f"🏪 <b>Магазин:</b> {store_name}\n\n"
-        f"📦 <b>Состав заказа:</b>\n{products_list}\n"
-        f"📱 <b>Телефон:</b> {phone}"
+        "<b>Новый заказ!</b>\n\n"
+        f"<b>Магазин:</b> {store_name}\n\n"
+        f"<b>Состав заказа:</b>\n{products_list}\n"
+        f"<b>Телефон:</b> {phone}"
     )
 
     try:

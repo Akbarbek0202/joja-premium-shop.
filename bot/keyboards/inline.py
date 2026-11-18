@@ -28,7 +28,7 @@ def get_category_products_keyboard(category: str, lang: str = "ru") -> InlineKey
     if not products:
         return InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton(text="⬅️ К категориям", callback_data="to_categories")]
+                [InlineKeyboardButton(text="К категориям", callback_data="to_categories")]
             ]
         )
 
@@ -45,7 +45,7 @@ def get_category_products_keyboard(category: str, lang: str = "ru") -> InlineKey
     if row:
         rows.append(row)
     rows.append(
-        [InlineKeyboardButton(text="⬅️ К категориям", callback_data="to_categories")]
+        [InlineKeyboardButton(text="К категориям", callback_data="to_categories")]
     )
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
@@ -54,16 +54,16 @@ def get_quantity_keyboard(quantity: int, lang: str = "ru") -> InlineKeyboardMark
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="➖", callback_data="qty_minus"),
+                InlineKeyboardButton(text="-", callback_data="qty_minus"),
                 InlineKeyboardButton(text=f"{quantity} шт.", callback_data="qty_count"),
-                InlineKeyboardButton(text="➕", callback_data="qty_plus"),
+                InlineKeyboardButton(text="+", callback_data="qty_plus"),
             ],
             [
                 InlineKeyboardButton(
-                    text="📥 Добавить в корзину", callback_data="qty_confirm"
+                    text="Добавить в корзину", callback_data="qty_confirm"
                 )
             ],
-            [InlineKeyboardButton(text="⬅️ Назад", callback_data="qty_back")],
+            [InlineKeyboardButton(text="Назад", callback_data="qty_back")],
         ]
     )
 
@@ -71,6 +71,6 @@ def get_quantity_keyboard(quantity: int, lang: str = "ru") -> InlineKeyboardMark
 def get_product_back_keyboard(lang: str = "ru") -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="⬅️ Назад", callback_data="to_categories")]
+            [InlineKeyboardButton(text="Назад", callback_data="to_categories")]
         ]
     )

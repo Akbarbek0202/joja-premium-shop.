@@ -1,4 +1,5 @@
 import unittest
+import unicodedata
 
 from bot.catalog_data import BASE_PRODUCTS
 from bot.i18n import localized_product_field
@@ -27,10 +28,10 @@ class RussianOnlyTests(unittest.TestCase):
         self.assertTrue(all(product.get("description_ru") for product in BASE_PRODUCTS))
 
     def test_product_fields_resolve_to_russian_catalog_values(self):
-        product = {"name": "Boldir 🍗", "name_ru": "Голень 🍗"}
-        self.assertEqual(localized_product_field(product, "name"), "Голень 🍗")
-        self.assertEqual(localized_product_field({"name": "Голень 🍗"}, "name"), "Голень 🍗")
-        self.assertEqual(localized_product_field({"name": "Boldir 🍗"}, "name"), "")
+        product = {"name": "Boldir \U0001f357", "name_ru": "Голень \U0001f357"}
+        self.assertEqual(localized_product_field(product, "name"), "Голень")
+        self.assertEqual(localized_product_field({"name": "Голень \U0001f357"}, "name"), "Голень")
+        self.assertEqual(localized_product_field({"name": "Boldir \U0001f357"}, "name"), "")
 
     def test_all_bot_keyboards_use_russian_labels(self):
         keyboards = (
@@ -57,10 +58,21 @@ class RussianOnlyTests(unittest.TestCase):
             for button in row
         )
 
-        self.assertIn("📦 Сделать заказ", labels)
-        self.assertIn("✅ Завершить заказ", labels)
+        self.assertIn("Сделать заказ", labels)
+        self.assertIn("Завершить заказ", labels)
         self.assertIn("Да, подтверждаю", labels)
         self.assertFalse(any("O'zbekcha" in label or "Buyurtma" in label for label in labels))
+        category_names = set(CATEGORY_NAMES.values())
+        self.assertTrue(
+            all(
+                label in category_names
+                or not any(
+                    unicodedata.category(character) in {"So", "Sk", "Me"}
+                    for character in label
+                )
+                for label in labels
+            )
+        )
 
 
 if __name__ == "__main__":

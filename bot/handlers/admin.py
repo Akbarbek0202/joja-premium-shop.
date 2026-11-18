@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 new_product: dict = {}
 
 ADMIN_MENU_TEXT = (
-    "🛠 <b>Панель администратора</b>\n\n"
+    "<b>Панель администратора</b>\n\n"
     "Здесь можно управлять товарами."
 )
 
@@ -71,7 +71,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     async def admin_entry(message: types.Message, state: FSMContext):
         if not _is_admin(message):
             await message.answer(
-                "⛔️ Этот раздел доступен только администратору."
+                "Этот раздел доступен только администратору."
             )
             return
 
@@ -111,7 +111,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
     @dp.message(AdminState.waiting_for_name)
     async def admin_invalid_name(message: types.Message):
-        await message.answer("⚠️ Отправьте текст.")
+        await message.answer("Отправьте текст.")
 
     # --- Шаг 2. Цена ---
 
@@ -146,7 +146,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
 
     @dp.message(AdminState.waiting_for_description)
     async def admin_invalid_desc(message: types.Message):
-        await message.answer("⚠️ Отправьте текст.")
+        await message.answer("Отправьте текст.")
 
     # --- Шаг 4. Фото (загрузка или URL) ---
 
@@ -164,7 +164,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         url = message.text.strip()
         if not url.lower().startswith(("http://", "https://")):
             await message.answer(
-                "⚠️ Ссылка должна начинаться с http:// или https://."
+                "Ссылка должна начинаться с http:// или https://."
             )
             return
         new_product["image"] = url
@@ -208,7 +208,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         )
         _reset_draft()
         await state.set_state(AdminState.menu)
-        await call.answer("✅")
+        await call.answer()
 
     # --- Список товаров ---
 
@@ -220,7 +220,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
         for p in products:
             by_cat.setdefault(p["category"], []).append(p)
 
-        lines = ["📋 <b>Список товаров:</b>"]
+        lines = ["<b>Список товаров:</b>"]
         for cat, items in by_cat.items():
             cat_title = CATEGORY_NAMES.get(cat, cat)
             lines.append(f"\n<b>{cat_title}</b>")
@@ -240,7 +240,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(F.data == "admin_edit")
     async def admin_edit_start(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         products = get_all_products()
         lang = await get_lang(state)
@@ -259,7 +259,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(AdminState.waiting_for_edit_product, F.data.startswith("adm_edit_"))
     async def admin_edit_select_product(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         product_id = call.data[len("adm_edit_"):]
         product = get_product(product_id)
@@ -287,7 +287,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(AdminState.waiting_for_edit_fields, F.data.startswith("adm_edit_field_"))
     async def admin_edit_choose_field(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         field = call.data[len("adm_edit_field_"):]
         data = await state.get_data()
@@ -372,7 +372,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(AdminState.waiting_for_edit_category, F.data.startswith("adm_edit_cat_"))
     async def admin_edit_category(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         category = call.data[len("adm_edit_cat_"):]
         data = await state.get_data()
@@ -395,7 +395,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(F.data == "admin_edit_fields")
     async def admin_edit_fields_back(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         data = await state.get_data()
         product = get_product(data.get("edit_product_id", ""))
@@ -416,7 +416,7 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
     @dp.callback_query(F.data == "adm_edit_remove_image")
     async def admin_edit_remove_image(call: types.CallbackQuery, state: FSMContext):
         if not _is_admin(call):
-            await call.answer("⛔️", show_alert=True)
+            await call.answer("Доступ запрещён", show_alert=True)
             return
         data = await state.get_data()
         product = update_product(data.get("edit_product_id", ""), {"image": ""})

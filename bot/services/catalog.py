@@ -12,6 +12,7 @@ import os
 
 from bot.config import CUSTOM_PRODUCTS_FILE, PRODUCT_OVERRIDES_FILE, ensure_data_dir
 from bot.catalog_data import BASE_PRODUCTS
+from bot.i18n import strip_emoji
 
 logger = logging.getLogger(__name__)
 
@@ -95,12 +96,12 @@ def add_product(name: str, price: int, description: str, image: str, category: s
 
     product = {
         "id": new_id,
-        "name": name,
-        "name_ru": name,
+        "name": strip_emoji(name),
+        "name_ru": strip_emoji(name),
         "category": category,
         "price": price,
-        "description": description,
-        "description_ru": description,
+        "description": strip_emoji(description),
+        "description_ru": strip_emoji(description),
         "image": image or "",
     }
     products.append(product)
@@ -136,6 +137,12 @@ def update_product(product_id: str, changes: dict) -> dict | None:
         raise ValueError("Недопустимые поля товара")
     if "category" in changes and changes["category"] not in CATEGORIES:
         raise ValueError("Недопустимая категория")
+    changes = {
+        field: strip_emoji(value)
+        if field in {"name", "name_ru", "description", "description_ru"} and isinstance(value, str)
+        else value
+        for field, value in changes.items()
+    }
 
     products = _load_custom_products()
     for product in products:

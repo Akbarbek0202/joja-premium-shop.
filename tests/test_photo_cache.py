@@ -1,5 +1,7 @@
 import unittest
 from io import BytesIO
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -17,6 +19,16 @@ def _webp_image() -> bytes:
 
 
 class ProductPhotoTests(unittest.IsolatedAsyncioTestCase):
+    async def test_local_product_photo_is_read_from_public_folder(self):
+        image_data = photo_cache._as_jpeg(_webp_image())
+        with TemporaryDirectory() as directory:
+            photo_path = Path(directory) / "1.jpg"
+            photo_path.write_bytes(image_data)
+            with patch.object(photo_cache, "PRODUCT_PHOTO_DIR", directory):
+                result = await photo_cache._download_image("/products/1.jpg")
+
+        self.assertEqual(result, image_data)
+
     async def test_webp_photo_is_uploaded_as_jpeg_and_cached(self):
         image_data = _webp_image()
         sent_message = SimpleNamespace(photo=[SimpleNamespace(file_id="cached-file-id")])
