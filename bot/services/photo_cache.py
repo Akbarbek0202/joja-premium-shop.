@@ -6,7 +6,7 @@ Telegram отдаёт каждому загруженному/отправлен
 боту не нужно каждый раз скачивать картинку с сайта.
 
 Схема работы:
-1. При старте бот ничего не знает — отправляет по URL (медленно, 1-2 сек).
+1. При первом открытии бот скачивает фото, преобразует его в JPEG и отправляет.
 2. После успешной отправки запоминает file_id (в памяти + в файл).
 3. Все последующие отправки — мгновенно по file_id.
 
@@ -16,12 +16,18 @@ import json
 import logging
 import os
 import threading
+from io import BytesIO
 
+import aiohttp
 from aiogram import Bot, types
+from aiogram.exceptions import TelegramAPIError
+from aiogram.types import BufferedInputFile
+from PIL import Image, ImageOps
 
 logger = logging.getLogger(__name__)
 
 CACHE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "bot", "data", "photo_cache.json")
+MAX_IMAGE_SIZE = 20 * 1024 * 1024
 
 _lock = threading.Lock()
 _cache: dict[str, str] = {}
@@ -66,15 +72,52 @@ def cache_file_id(url: str, file_id: str) -> None:
         _save()
 
 
-async def send_product_photo(bot: Bot, chat_id: int, url: str, caption: str, reply_markup) -> types.Message:
-    """Отправляет фото товара: сначала по кэшу file_id, потом по URL.
+async def _download_image(url: str) -> bytes:
+    timeout = aiohttp.ClientTimeout(total=20)
+    chunks = []
+    size = 0
 
-    При неудаче по file_id — повторяет по URL и обновляет кэш.
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(url) as response:
+            response.raise_for_status()
+            async for chunk in response.content.iter_chunked(64 * 1024):
+                size += len(chunk)
+                if size > MAX_IMAGE_SIZE:
+                    raise ValueError("Размер фото товара превышает 20 МБ")
+                chunks.append(chunk)
+
+    return b"".join(chunks)
+
+
+def _as_jpeg(image_data: bytes) -> bytes:
+    with Image.open(BytesIO(image_data)) as source:
+        image = ImageOps.exif_transpose(source)
+        if image.mode in ("RGBA", "LA") or "transparency" in image.info:
+            rgba = image.convert("RGBA")
+            converted = Image.new("RGB", rgba.size, "white")
+            converted.paste(rgba, mask=rgba.getchannel("A"))
+        else:
+            converted = image.convert("RGB")
+
+        output = BytesIO()
+        converted.save(output, format="JPEG", quality=90, optimize=True)
+        return output.getvalue()
+
+
+async def send_product_photo(
+    bot: Bot,
+    chat_id: int,
+    url: str,
+    caption: str,
+    reply_markup: types.InlineKeyboardMarkup | None = None,
+) -> types.Message:
+    """Отправляет фото товара: сначала по кэшу file_id, потом после загрузки.
+
+    Фото загружается ботом и преобразуется в JPEG, чтобы Telegram принимал
+    изображения в форматах, которые не поддерживаются напрямую.
     """
-    from aiogram.types import InlineKeyboardMarkup
-
     _load()
-    file_id = _cache.get(url)
+    file_id = get_file_id(url)
 
     if file_id:
         try:
@@ -85,13 +128,13 @@ async def send_product_photo(bot: Bot, chat_id: int, url: str, caption: str, rep
                 parse_mode="HTML",
                 reply_markup=reply_markup,
             )
-        except Exception as e:
-            logger.warning(f"Отправка по file_id не удалась, пробую по URL: {e}")
+        except TelegramAPIError as e:
+            logger.warning(f"Отправка по file_id не удалась, загружаю изображение заново: {e}")
 
-    # Отправка по URL
+    image_data = await _download_image(url)
     msg = await bot.send_photo(
         chat_id=chat_id,
-        photo=url,
+        photo=BufferedInputFile(_as_jpeg(image_data), filename="product.jpg"),
         caption=caption,
         parse_mode="HTML",
         reply_markup=reply_markup,

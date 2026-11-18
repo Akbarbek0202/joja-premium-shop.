@@ -1,6 +1,6 @@
 """
-Прогрев кэша фото: бот заранее скачивает каждую картинку через Telegram
-и сохраняет file_id. После этого карточки товаров открываются мгновенно.
+Прогрев кэша фото: бот заранее отправляет каждую картинку и сохраняет file_id.
+После этого карточки товаров открываются мгновенно.
 
 Запуск (один раз после смены картинок или на новом сервере):
     python scripts/warmup_photo_cache.py
@@ -15,7 +15,7 @@ from aiogram import Bot  # noqa: E402
 
 from bot.catalog_data import BASE_PRODUCTS  # noqa: E402
 from bot.config import TOKEN, PAPA_ID  # noqa: E402
-from bot.services.photo_cache import cache_file_id, get_file_id  # noqa: E402
+from bot.services.photo_cache import get_file_id, send_product_photo  # noqa: E402
 
 
 async def warmup() -> None:
@@ -51,13 +51,10 @@ async def warmup() -> None:
             continue
 
         try:
-            # Telegram отдаёт file_id только после реальной отправки,
-            # поэтому фото отправляются папе в Saved Messages.
-            msg = await bot.send_photo(chat_id=PAPA_ID, photo=url)
-            if msg.photo:
-                cache_file_id(url, msg.photo[-1].file_id)
-                ok += 1
-                print(f"✓  {name}: закэшировано")
+            # Telegram отдаёт file_id только после реальной отправки.
+            await send_product_photo(bot, PAPA_ID, url, name)
+            ok += 1
+            print(f"✓  {name}: закэшировано")
         except Exception as e:
             failed += 1
             print(f"✗  {name}: {type(e).__name__}: {str(e)[:60]}")

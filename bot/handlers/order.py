@@ -1,8 +1,10 @@
+import asyncio
 import logging
 
+import aiohttp
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.fsm.context import FSMContext
-from aiogram.exceptions import TelegramBadRequest, TelegramNotFound
+from aiogram.exceptions import TelegramAPIError, TelegramBadRequest, TelegramNotFound
 
 from bot.keyboards.inline import (
     get_categories_keyboard,
@@ -126,8 +128,14 @@ def register_handlers(dp: Dispatcher, bot: Bot) -> None:
                 pass
             try:
                 await send_product_photo(bot, call.message.chat.id, product["image"], text, keyboard)
-            except (TelegramBadRequest, TelegramNotFound) as e:
-                # Фото не загрузилось (битая ссылка) — отправляем текстом
+            except (
+                TelegramAPIError,
+                aiohttp.ClientError,
+                asyncio.TimeoutError,
+                OSError,
+                ValueError,
+            ) as e:
+                # Если фото недоступно или имеет неподдерживаемый формат, показываем карточку текстом.
                 logger.warning(f"Не удалось отправить фото {product['image']}: {e}")
                 await call.message.answer(text, reply_markup=keyboard)
         else:

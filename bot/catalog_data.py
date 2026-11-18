@@ -26,8 +26,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "2",
-        "name": "File 🥩",
-        "name_ru": "Филе 🥩",
+        "name": "File 🐔",
+        "name_ru": "Филе 🐔",
         "category": "parts",
         "price": 54000,
         "description": "Tovuqning eng yumshoq va yog'siz ko'krak qismi.",
@@ -36,8 +36,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "3",
-        "name": "Maloe file 🥩",
-        "name_ru": "Малое филе 🥩",
+        "name": "Maloe file 🐔",
+        "name_ru": "Малое филе 🐔",
         "category": "parts",
         "price": 49000,
         "description": "Tovuqning eng yumshoq va yog'siz ko'krak qismi.",
@@ -46,8 +46,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "4",
-        "name": "Son 🍖",
-        "name_ru": "Бедро 🍖",
+        "name": "Son 🍗",
+        "name_ru": "Бедро 🍗",
         "category": "parts",
         "price": 40000,
         "description": "Sersuv va mazali son qismi, qovurish uchun juda mos.",
@@ -56,8 +56,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "5",
-        "name": "Qanot tirsak qismi 🪶",
-        "name_ru": "Локтевая часть крыла 🪶",
+        "name": "Qanot tirsak qismi 🪽",
+        "name_ru": "Локтевая часть крыла 🪽",
         "category": "parts",
         "price": 51000,
         "description": "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.",
@@ -66,8 +66,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "6",
-        "name": "Qanot yelka qismi 🪶",
-        "name_ru": "Плечевая часть крыла 🪶",
+        "name": "Qanot yelka qismi 🪽",
+        "name_ru": "Плечевая часть крыла 🪽",
         "category": "parts",
         "price": 50000,
         "description": "Hamma yaxshi ko'radigan qarsildoq tovuq qanotchalari.",
@@ -160,8 +160,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "14",
-        "name": "Naggetslar Stripsi 🥢",
-        "name_ru": "Стрипсы 🥢",
+        "name": "Naggetslar Stripsi",
+        "name_ru": "Стрипсы",
         "category": "naggets",
         "price": 47500,
         "description": "Uzunchoq shakldagi qarsildoq tovuq stripslari.",
@@ -190,8 +190,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "17",
-        "name": "Kotletlari Semeyniye 🧆",
-        "name_ru": "Котлеты Семейные 🧆",
+        "name": "Kotletlari Semeyniye",
+        "name_ru": "Котлеты Семейные",
         "category": "naggets",
         "price": 20000,
         "description": "Mazali va sersuv oilaviy tovuq kotletalari.",
@@ -212,8 +212,8 @@ BASE_PRODUCTS = [
     # --- 📥 Лотки ---
     {
         "id": "19",
-        "name": "Golen lotok 📥",
-        "name_ru": "Голень лоток 📥",
+        "name": "Golen lotok",
+        "name_ru": "Голень лоток",
         "category": "lotok",
         "price": 35000,
         "description": "Maxsus gigiyenik lotokda qadoqlangan tovuq boldirlari.",
@@ -222,8 +222,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "20",
-        "name": "File lotok 📥",
-        "name_ru": "Филе лоток 📥",
+        "name": "File lotok",
+        "name_ru": "Филе лоток",
         "category": "lotok",
         "price": 45500,
         "description": "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.",
@@ -232,8 +232,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "22",
-        "name": "Bedro lotok 📥",
-        "name_ru": "Бедро лоток 📥",
+        "name": "Bedro lotok",
+        "name_ru": "Бедро лоток",
         "category": "lotok",
         "price": 32000,
         "description": "Maxsus gigiyenik lotokda qadoqlangan tovuq sonlari.",
@@ -242,8 +242,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "23",
-        "name": "Maloe file lotok 📥",
-        "name_ru": "Малое филе лоток 📥",
+        "name": "Maloe file lotok",
+        "name_ru": "Малое филе лоток",
         "category": "lotok",
         "price": 40000,
         "description": "Maxsus gigiyenik lotokda qadoqlangan tovuq filesi.",
@@ -254,8 +254,8 @@ BASE_PRODUCTS = [
     # --- 🫀 Субпродукты ---
     {
         "id": "24",
-        "name": "Jigar lotok 🩸",
-        "name_ru": "Печень лоток 🩸",
+        "name": "Jigar lotok",
+        "name_ru": "Печень лоток",
         "category": "sub",
         "price": 8000,
         "description": "Tovuq jigari lotokda.",
@@ -274,8 +274,8 @@ BASE_PRODUCTS = [
     },
     {
         "id": "26",
-        "name": "Oshqozon lotok 📥",
-        "name_ru": "Желудок лоток 📥",
+        "name": "Oshqozon lotok",
+        "name_ru": "Желудок лоток",
         "category": "sub",
         "price": 20000,
         "description": "Tovuq oshqozoni lotokda.",
